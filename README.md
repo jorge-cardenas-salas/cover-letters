@@ -1,2 +1,52 @@
-# cover-letters
-Simplify Cover Letter Creation
+# Cover Letters Project
+
+## Motivation
+Introductory Practice Project.
+
+## Basic Description
+Will allow a candidate to create cover letters (to be attached to applications) based on the candidate's profile and the details on the position
+
+## Target Functionality for v1.0.0
+- The first time a user onboards to the app:
+	- Cover letter template, with placeholders
+		- Can be more than one (e.g. for a placement agency vs a company)
+		- [Next step]: Plain text and formatted versions
+	- List of skills
+	- List of job experiences/responsibilities
+	- List of job achievements
+	- List of "others"
+- To generate Cover Letters
+	- Name of company, recruiter, job title
+	- Select:
+		- Example job experience, achievements and "others"
+		- One or more skills applicable for the job
+		- Template to be used (one or more)
+
+## Practice points:
+- Database: 
+	- Profile DB
+		- People
+		- skills
+		- Experience
+		- Achievements
+		- Others
+		- Templates <-- Likely not a DB BLOB but... something else
+	- Applications
+		- Jobs
+- UI: TBD
+- API / Microservices: 
+	- CRUD Profile
+	- Create Cover Letters
+	- Generate Docs
+- Kafka: 
+- Docker:
+- Kubernetes:
+- Microservices:
+- Cloud (?):
+
+
+## Outputs
+- Cover letter documents
+	- One for each template and position selected
+
+
