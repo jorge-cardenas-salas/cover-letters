@@ -33,6 +33,18 @@ This file is just to add notes and background about the technologies used in thi
 - Can run on Gunicorn (WSGI) and ASGI servers such as Uvicorn and Hypercorn, making it a good choice for production
   environments
 
+## SQLAlchemy
+- `declarative_base()` is a factory function that constructs a base class for declarative class definitions (which is assigned to the Base variable)
+- The Declarative system is the typically used system provided by the SQLAlchemy ORM in order to define classes mapped to relational database tables.
+  - However, as noted in Classical Mappings, Declarative is in fact a series of extensions that ride on top of the SQLAlchemy mapper() construct.
+- To link a pydantic model to a SQLAlchemy model (table) we declare an inner `Config` class inside the pydantic model
+  - In the `Config` class We set the value `orm_mode = True` to let pydantic know this is an ORM (duh!)
+  - Pydantic's `orm_mode` will tell the Pydantic model to read the data even if it is not a dict, but an ORM model
+  - This way, instead of only trying to get the id value from a dict, as in `id = data["id"]` it will also try `id = data.id`
+- SQLAlchemy and many others are by default "lazy loading".
+  - That means, they don't fetch the data for relationships (e.g. `User`-->`Skill`) unless you try to access the attribute that would contain that data.
+  - 
+
 ## API/HTTP Request Methods
 These are the basic ones, see below for further reference:
 - [https://www.freecodecamp.org/news/http-request-methods-explained/]

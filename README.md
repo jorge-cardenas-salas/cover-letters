@@ -59,11 +59,13 @@ Will allow a candidate to create cover letters (to be attached to applications) 
 ### Necessary packages  
 - `pip install fastapi`
 - `pip install uvicorn`
+- `pip install sqlalchemy`
 
 ### How to run
 1. From the command line execute:
 ```commandline
 python -m uvicorn cover-letters.api.endpoints:app --reload
+python -m uvicorn api.endpoints:app --reload
 ```
 2. To see the docs (inc all endpoints):
 ```url
@@ -77,7 +79,7 @@ http://localhost:8000/docs
 
 ### General notes
 ```commandline
-python3 -m uvicorn app:app --reload
+python -m uvicorn cover-letters.api.endpoints:app --reload
 ```
 In the previous line:
 - `uvicorn` is the server on which the API runs
