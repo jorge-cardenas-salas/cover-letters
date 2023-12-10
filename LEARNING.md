@@ -13,6 +13,8 @@ This file is just to add notes and background about the technologies used in thi
 - [ ] Also learn about GraphQL
     - [ ] How does it compare to REST for ease of implementation?
     - [ ] How does it compare to REST in other areas (e.g. performance)
+- [ ] Add/use `requirements.txt` in my application
+- [ ] What is the `__init__.py` (in the Python package folder) used for?
 
 ## FastAPI
 

@@ -57,16 +57,17 @@ Will allow a candidate to create cover letters (to be attached to applications) 
 <details>
 
 ### Necessary packages  
-- `pip install fast-api` (confirm if `fast-api` is the correct name)
+- `pip install fastapi`
+- `pip install uvicorn`
 
 ### How to run
 1. From the command line execute:
 ```commandline
-python3 -m uvicorn app:app --reload
+python -m uvicorn cover-letters.api.endpoints:app --reload
 ```
 2. To see the docs (inc all endpoints):
 ```url
-https://localhost:8000/docs
+http://localhost:8000/docs
 ```
 
 </details>
