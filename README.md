@@ -64,11 +64,10 @@ Will allow a candidate to create cover letters (to be attached to applications) 
 ### How to run
 1. From the command line execute:
 ```commandline
-python -m uvicorn cover-letters.api.endpoints:app --reload
 python -m uvicorn api.endpoints:app --reload
 ```
 2. To see the docs (inc all endpoints):
-```url
+```
 http://localhost:8000/docs
 ```
 

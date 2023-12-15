@@ -2,7 +2,38 @@
 
 This file is just to add notes and background about the technologies used in this repo
 
+## Project Roadmap
+<details open >
+
+- [x] Set up DB
+- [x] First endpoint to add users
+- [ ] Dockerize my API
+- [ ] Kubernetize my API
+- [ ] Enrich add users endpoint to optionally [include skills](https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3)
+- [ ] Basic Kafka
+  - [ ] Produce messages from the API
+  - [ ] Consume messages
+- [ ] Consumer
+  - [ ] Validate incoming messages
+  - [ ] Enrich data using the API (if applicable)
+  - [ ] Create and store PDF's based on templates
+- [ ] Add automated testing
+  - [ ] Unit tests
+  - [ ] Feature tests (Cucumber / Gherkin)
+- [ ] Break the API and the Kafka consumer into separate projects
+- [ ] Implement secure Kafka
+- [ ] Put this in the cloud
+  - [ ] Is there a free version of Azure/GCP/etc ? (maybe RedHat?)
+  - [ ] Put K8S modules in the cloud
+  - [ ] Move the MySQL DB to the cloud
+  - [ ] Store PDF documents in the cloud
+  - [ ] Store templates (HTML?) in the cloud
+
+</details>
+
+
 ## To learn
+<details>
 
 - [ ] Check exactly what FastAPI is
 - [ ] How does FastAPI compares to other solutions
@@ -15,8 +46,10 @@ This file is just to add notes and background about the technologies used in thi
     - [ ] How does it compare to REST in other areas (e.g. performance)
 - [ ] Add/use `requirements.txt` in my application
 - [ ] What is the `__init__.py` (in the Python package folder) used for?
+</details>
 
 ## FastAPI
+<details>
 
 - it is a framework to build RESTful API's
 - It uses Pydantic intrinsically to validate, serialize and deserialize data
@@ -32,21 +65,36 @@ This file is just to add notes and background about the technologies used in thi
 - Automatically generate OpenAPI documentation
 - Can run on Gunicorn (WSGI) and ASGI servers such as Uvicorn and Hypercorn, making it a good choice for production
   environments
+</details>
+
 
 ## SQLAlchemy
-- `declarative_base()` is a factory function that constructs a base class for declarative class definitions (which is assigned to the Base variable)
-- The Declarative system is the typically used system provided by the SQLAlchemy ORM in order to define classes mapped to relational database tables.
-  - However, as noted in Classical Mappings, Declarative is in fact a series of extensions that ride on top of the SQLAlchemy mapper() construct.
+<details>
+
+- `declarative_base()` is a factory function that constructs a base class for declarative class definitions (which is
+  assigned to the Base variable)
+- The Declarative system is the typically used system provided by the SQLAlchemy ORM in order to define classes mapped
+  to relational database tables.
+    - However, as noted in Classical Mappings, Declarative is in fact a series of extensions that ride on top of the
+      SQLAlchemy mapper() construct.
 - To link a pydantic model to a SQLAlchemy model (table) we declare an inner `Config` class inside the pydantic model
-  - In the `Config` class We set the value `orm_mode = True` to let pydantic know this is an ORM (duh!)
-  - Pydantic's `orm_mode` will tell the Pydantic model to read the data even if it is not a dict, but an ORM model
-  - This way, instead of only trying to get the id value from a dict, as in `id = data["id"]` it will also try `id = data.id`
+    - In the `Config` class We set the value `orm_mode = True` to let pydantic know this is an ORM (duh!)
+    - Pydantic's `orm_mode` will tell the Pydantic model to read the data even if it is not a dict, but an ORM model
+    - This way, instead of only trying to get the id value from a dict, as in `id = data["id"]` it will also
+      try `id = data.id`
 - SQLAlchemy and many others are by default "lazy loading".
-  - That means, they don't fetch the data for relationships (e.g. `User`-->`Skill`) unless you try to access the attribute that would contain that data.
-  - 
+    - That means, they don't fetch the data for relationships (e.g. `User`-->`Skill`) unless you try to access the
+      attribute that would contain that data.
+    -
+
+</details>
+
 
 ## API/HTTP Request Methods
+<details>
+
 These are the basic ones, see below for further reference:
+
 - [https://www.freecodecamp.org/news/http-request-methods-explained/]
 - [https://www.w3schools.com/tags/ref_httpmethods.asp]
 
@@ -89,3 +137,6 @@ These are the basic ones, see below for further reference:
 ### HTTP DELETE request
 
 - It is used to, well.... delete data
+
+</details>
+
