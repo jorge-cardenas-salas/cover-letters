@@ -1,0 +1,18 @@
+version: "3"
+services:
+  # each service that could be executed from docker-compose goes here
+  # note that the name can be anything (I just named it api)
+  api:
+    build: . # # config to build my image goes here... maybe? TODO: Investigate further
+    expose:
+      - 8000
+    ports: # Port for my API
+      - "8000:8000"
+    restart: "always"
+#    depends_on: # Used to specify the order of dependencies
+#      - my_other_service # TODO: this is how we make sure the API should be UP before starting the Consumer
+
+#networks:
+#  cover-letter:
+#    external: false
+#
