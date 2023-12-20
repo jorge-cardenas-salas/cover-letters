@@ -28,6 +28,14 @@ This file is just to add notes and background about the technologies used in thi
             * [1. Create a Dockerfile](#1-create-a-dockerfile)
             * [2. Create the docker-compose.yaml](#2-create-the-docker-composeyaml)
             * [3. Start up the container](#3-start-up-the-container)
+    * [VM vs Docker vs Swarms vs Kubernetes](#vm-vs-docker-vs-swarms-vs-kubernetes)
+        * [Overview](#overview)
+        * [Terminology](#terminology)
+    * [Kubernetes](#kubernetes)
+        * [Terminology](#terminology-1)
+        * [1. Get minikube](#1-get-minikube)
+        * [1.5 If you come accross "Unable to resolve the current Docker CLI context "default""](#15-if-you-come-accross-unable-to-resolve-the-current-docker-cli-context-default)
+        * [2. Start your kubernetes cluster](#2-start-your-kubernetes-cluster)
 
 <!-- TOC -->
 
@@ -37,8 +45,8 @@ This file is just to add notes and background about the technologies used in thi
 
 - [x] Set up DB
 - [x] First endpoint to add users
-- [ ] Dockerize my API
-    - [ ] Use `requirements.txt`
+- [x] Dockerize my API
+    - [x] Use `requirements.txt`
 - [ ] Kubernetize my API
 - [ ] Add automated testing
     - [ ] Unit tests
@@ -236,7 +244,7 @@ course:
 
 ## Docker
 
-<details open>
+<details>
 
 ### Concepts
 
@@ -339,4 +347,217 @@ docker-compose up api
 
 </details>
 
+## VM vs Docker vs Swarms vs Kubernetes
 
+<details>
+
+### Overview
+
+- VM's
+    - Share the same OS and hardware
+    - They have an "hypervisor" to harmonize each VM instance
+    - Isolate:
+        - application
+        - dependencies
+        - a VM Operating System
+    - They are rather inflexible (i.e. not scalable)
+- Containers
+    - Include
+        - Application
+        - App Dependencies
+        - IMPORTANTLY: The OS dependencies
+            - This resolve an old question of mine, the container only has **_part_** of the OS
+            - For ex. Windows functionality in a container allows it to run on Unix
+    - On top of the OS there is a Container Runtime, which analyzes and assigns resources for each container
+        - Thus making the boundaries flexible
+    - This architecture makes the container very light compared to VM's
+    - TRIVIA: Docker is lagging behind `cri-o`
+        - `cri-o` has built-in monitoring
+        - also it is significantly lighter
+        - Because of the above both Kubernetes and Openshift favor `cri-o`
+- Container swarms
+    - Harmonizes multiple containers across different servers
+    - Swarms help with the following scenarios:
+        - distributes redundant resources in different containers
+        - Host-together (geographic) restrictions
+        - Startup order
+        - Security
+- Kubernetes
+    - Like swarming but for way more complex tasks (see above)
+    - Orchestrates relationships between
+        - hosts
+        - containers
+        - container to container
+    - A basic kubernetes cluster will need master and worker node
+        - This allows scalability, by adding new workers to the same master
+        - Applications run on workers, not masters
+- OpenShift
+    - Addresses shortcoming of K8S, namely
+        - No UI/Consoler (hard to use through API only)
+        - No native monitoring
+    - Enter Opeshift by RedHat
+    - Versions of OpenShift offer Kubernetes + many other services on top, such as
+        - Jenkins
+        - Logging
+        - Tekton
+        - IDE
+        - Graphana
+    - The most advanced ($$$) option ofers advanced cluster security and management
+
+### Terminology
+
+- function transform input/output
+- microservice groups functions
+- applications is a **large** collection of functions
+- image: the bundle of resources tied together for a service
+- node: a server with OS and container runtime on top of it
+- container: The running image (read/write)
+- pod: logical group of containers
+    - all apps in a pod share the same resources and network
+    - Pods use an agent on each node called a `kubelet` to communicate with the K8S API and the rest of the cluster
+- pods vs nodes vs cluster:
+    - Pods are simply the smallest unit of execution in Kubernetes, consisting of one or more containers
+    - Nodes are the physical servers or VMs that comprise a Kubernetes Cluster
+    - A cluster is a group of redundant servers that provide uninterrupted service with component failures within the
+      cluster.
+    - A node is an individual server that is configured within a cluster
+    - So, in short, from smallest to largest:
+        - **Function**
+        - **Container**: Running read/write image (most likely Docker)
+        - **Pod**: Smallest K8S (not Docker) unit, containing one or more containers
+        - **Nodes**: Physical servers, with one or more pods running on top
+        - **Cluster**: Group of redundant (to ensure reliability) servers/VM's with multiple nodes
+- replica set: group of similar pods, running simultaneously
+- service: collection of replica sets with a comon goal
+
+</details>
+
+## Kubernetes
+
+<details open>
+
+### Terminology
+
+- **Minikube**: k8s cluster with single node. used for test purposes. If you want to quickly spin up a k8s environment
+  on your laptop.
+- **kubectl**: command line tool for k8s cluster. you can create, delete, update components and debug stuff in k8s using
+  kubectl.
+- **kubelet**: k8s process that runs on each node to manage containers: starting, communicating with them etc.
+
+So in combination, you may have a minikube cluster with 1 node that has kubelet process running on it, and you can
+create/update/delete things in the clusterusing kubectl.
+
+- `minikube` : A tool for local K8S usage
+
+### Installation
+
+#### 1. Get minikube
+
+Just Google it and download
+
+#### 1.5 If you come accross "Unable to resolve the current Docker CLI context "default""
+
+Problem:
+
+```text
+Unable to resolve the current Docker CLI context "default": context "default": context not found: on Windows
+```
+
+You can update de active context of Docker to `default`, it should work after
+that ([Reference](https://stackoverflow.com/questions/77208746/unable-to-resolve-the-current-docker-cli-context-default-context-default-c)) :
+
+```commandline
+docker context use default
+```
+
+#### 2. Start your kubernetes cluster
+
+Using `minikube` just get started
+
+```commandline
+minikube start
+```
+
+Confirm that it works:
+
+```commandline
+minikube service list
+```
+
+expected output something like this:
+
+```text
+|-------------|------------|--------------|-----|
+|  NAMESPACE  |    NAME    | TARGET PORT  | URL |
+|-------------|------------|--------------|-----|
+| default     | kubernetes | No node port |     |
+| kube-system | kube-dns   | No node port |     |
+|-------------|------------|--------------|-----|
+```
+
+#### 3. Create folder structure
+
+- k8s
+    - namespaces
+        - ns.yaml
+    - code
+        - deployment.yaml
+        - secret.yaml
+        - service.yaml
+
+##### deployment.yaml
+```yaml
+
+```
+
+##### secret.yaml
+```yaml
+
+```
+##### service.yaml
+```yaml
+
+```
+
+### Assorted questions
+
+- Do I need a public image for my repo before I use K8S?
+    - if so, what are my options?
+    - I need to push this to the cloud later nonetheless, just to keep it in mind
+-
+
+### Notes
+
+- Namespaces
+    - They are a way to organize clusters into virtual sub-clusters
+    - they can be helpful when different teams or projects share a Kubernetes cluster.
+    - Any number of namespaces are supported within a cluster, each logically separated from others but with the ability
+      to communicate with each other
+    - they isolate groups of resources within a single cluster
+- `deployment.yaml`
+    - specifies the configuration for a Deployment object, i.e. a Kubernetes object that can create and update a set of
+      identical pods (replicas)
+    - not only creates the pods but also:
+        - ensures the correct number of pods is always running in the cluster
+        - handles scalability
+        - takes care of updates to the pods on an ongoing basis
+    - It can configure:
+        - multiple replicas
+        - resource usage limits (per container)
+        - health checks (did the container start correctly?)
+- Secrets
+    - they are... exactly what the name implies
+    - Initialized using `kubectl` or a config file
+    - `secret.yaml`
+      - See [examples](https://www.mirantis.com/cloud-native-concepts/getting-started-with-kubernetes/what-are-kubernetes-secrets/) (
+      both for config file or `kubectl`)
+    - Seems like the config file can be an indepedent `secret.yaml` or baked it into `deployment.yaml` TODO: Confirm
+- Service
+    - enables network access to a set of Pods in Kubernetes
+    - Services select Pods based on their labels
+        - When a network request is made to the service, it selects all Pods in the cluster matching the service's
+          selector, chooses one of them, and forwards the network request to it.
+    - Nice explaining
+      graphs [here](https://matthewpalmer.net/kubernetes-app-developer/articles/service-kubernetes-example-tutorial.html)
+
+</details>

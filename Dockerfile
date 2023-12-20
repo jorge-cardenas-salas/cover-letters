@@ -13,5 +13,4 @@ RUN pip install --upgrade pip
 RUN pip install -r ./requirements.txt
 
 # Start uvicorn itself
-# TODO: Still confused why we can't do this through docker-compose.yaml
 CMD ["uvicorn", "api.endpoints:app", "--host=0.0.0.0", "--reload"]

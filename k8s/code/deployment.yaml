@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment # Again, notice this case-sensitive and an Enum
+metadata:
+  name: cover-letter-deployment # I don't think there a convention for this
+  namespace: cover-letter-api # I assume this one DOES have to match ns.yaml
+  labels:
+    app: cover-letter  # The sample uses this convention between metadata.name and this tag
+spec:  # Here's "the meat" of our application configuration
+  replicas: 1 # Can be as many as needed, using 1 for simplicity
+  selector:
+    matchLabels:
+      app: cover-letter-app # Again, sample uses this convention between metadata.name and this tag
+  template:
+    metadata:
+#      name: Title # not mandatory
+      labels:
+        app: cover-letter-app #use the same as matchLabels.app
+    spec:
+      initContainers: # stuff that needs to happen BEFORE other containers run, e.g. set up the database
+        - name: init-postgres-service
+          image: postgres:10.17
+          # The following in particular does a quick check to confirm the DB is up
+          command: ['sh', '-c',
+          'until pg_isready -h postgres-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local -p 5432;
+          do echo waiting for database; sleep 2; done;']
+      containers:
+        - image: Image  # The URL for the Docker image... how do I do this locally?
+          imagePullPolicy: IfNotPresent # These are enums as well Crtl-space for options
+          name: cover-letter-container # Again, following some other previous conventions
+          envFrom:
+            - secretRef: # Exactly what it sounds like, but not sure how to link it to secret.yaml
+                name: cover-letter-secret
+          ports:
+            - containerPort: 8000 # Using the same one as in Dockerfile
+              name: fastapi # Confirm if this is correct
+          readinessProbe: # This is cool, used to confirm if app works fine before running
+            httpGet: # There is no POST option, but /docs is obviously only GET
+              port: 8000
+              path: /docs
+#            initialDelaySeconds: 15 # Not sure why we'd need this....
+          livenessProbe: # similar to readinessProbe but used by kubectl to see if an app is still alive
+            httpGet:
+              port: 8000
+              path: /docs
+#            initialDelaySeconds: 15 # Not sure why we'd need this....
+            periodSeconds: 15 # What is this for?
+          resources: # Hardware config resources, to avoid damaging our server with our app (e.g. memory leak)
+            requests:
+              memory: "512Mi"
+              cpu: "0.5"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
