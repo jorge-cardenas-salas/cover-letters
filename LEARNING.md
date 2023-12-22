@@ -506,16 +506,21 @@ expected output something like this:
         - service.yaml
 
 ##### deployment.yaml
-```yaml
 
+```yaml
+#tbd
 ```
 
 ##### secret.yaml
-```yaml
 
-```
-##### service.yaml
 ```yaml
+#tbd
+```
+
+##### service.yaml
+
+```yaml
+#tbd
 
 ```
 
@@ -549,7 +554,8 @@ expected output something like this:
     - they are... exactly what the name implies
     - Initialized using `kubectl` or a config file
     - `secret.yaml`
-      - See [examples](https://www.mirantis.com/cloud-native-concepts/getting-started-with-kubernetes/what-are-kubernetes-secrets/) (
+      -
+      See [examples](https://www.mirantis.com/cloud-native-concepts/getting-started-with-kubernetes/what-are-kubernetes-secrets/) (
       both for config file or `kubectl`)
     - Seems like the config file can be an indepedent `secret.yaml` or baked it into `deployment.yaml` TODO: Confirm
 - Service
