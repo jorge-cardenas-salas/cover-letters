@@ -3,7 +3,7 @@ services:
   # each service that could be executed from docker-compose goes here
   # note that the name can be anything (I just named it api)
   api:
-    build: . # # config to build my image goes here... maybe? TODO: Investigate further
+    build: . # config to build my image goes here... maybe? TODO: Investigate further
     expose:
       - 8000
     ports: # Port for my API

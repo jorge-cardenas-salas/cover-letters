@@ -33,18 +33,24 @@ This file is just to add notes and background about the technologies used in thi
 
 ## Project Roadmap
 
-<details open >
+<details open>
 
 - [x] Set up DB
 - [x] First endpoint to add users
-- [ ] Dockerize my API
-    - [ ] Use `requirements.txt`
-- [ ] Kubernetize my API
+- [x] Dockerize my API
+    - [x] Use `requirements.txt`
+- [ ] Enrich add users endpoint to
+  optionally [include skills](https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3)
 - [ ] Add automated testing
     - [ ] Unit tests
     - [ ] Feature tests (Cucumber / Gherkin)
-- [ ] Enrich add users endpoint to
-  optionally [include skills](https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3)
+- [ ] Kubernetize my API
+- [ ] Feature: load data from:
+    - [ ] A file
+    - [ ] Others? (TBD)
+- [ ] Feature: upload files (Cover letters/Resumes)
+- [ ] Feature: Create stuff from templates (TBD, the Consumer might a better place for it)
+- [ ] Add endpoint to PULL data from the DB
 - [ ] Basic Kafka
     - [ ] Produce messages from the API
     - [ ] Consume messages
@@ -236,7 +242,7 @@ course:
 
 ## Docker
 
-<details open>
+<details>
 
 ### Concepts
 
@@ -336,6 +342,42 @@ services:
 ```commandline
 docker-compose up api
 ```
+
+</details>
+
+## General: What to set up for blank project
+
+<details open>
+
+### 1. Make sure your DB is up and running
+
+**IMPORTANT**: Consider creating a script for it
+
+1. From Windows, open `Services`
+2. Look for `MySQLServer`
+3. Hit `Start`
+
+### 2. Create new project in PyCharm
+
+### 3. Basic set up in PyCharm
+
+#### 3.n. Create models
+
+- For each model identified
+    - Create a class, inheriting from `BaseModel` (`from pydantic import BaseModel`)
+    - Add properties straight under the class, e.g.:
+
+```python
+class UserModel(BaseModel):
+    id: Optional[int] = None
+    name: str
+    email: str
+```
+
+- Don't forget to add a `Config` class inside the model and set `orm_mode = True`, this tells pydantic that is a an
+  Object-Relational (DB) model
+
+#### 3.n. Database
 
 </details>
 

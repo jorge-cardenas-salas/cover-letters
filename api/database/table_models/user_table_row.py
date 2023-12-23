@@ -1,5 +1,6 @@
 from api.database.database import Base
 from sqlalchemy import Column, BigInteger, String
+from sqlalchemy.orm import relationship
 
 
 class UserTableRow(Base):
@@ -14,4 +15,4 @@ class UserTableRow(Base):
 
     # TODO: Add relationships here, to link skills to users and other tables
     # https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3
-    # skills = relationship("SkillTable", back_populates="user")
+    skills = relationship("SkillTable", back_populates="user")
