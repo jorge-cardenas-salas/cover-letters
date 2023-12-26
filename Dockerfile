@@ -5,7 +5,6 @@ FROM python:3.8
 WORKDIR /app
 
 # Copy "local" files to the container (in the `/app` folder)
-# Sample:
 COPY ./api/ ./api/
 COPY ./requirements.txt .
 
