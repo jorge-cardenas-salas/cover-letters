@@ -1,3 +1,5 @@
+import traceback
+
 from fastapi import FastAPI, Depends
 
 from api.database.database import SessionLocal
@@ -41,4 +43,7 @@ def add_users(model: UserModel, session: Session = Depends(get_session)):
         model (UserModel): The user data to be added
         session (Session): The DB session to be used to store the data
     """
-    return UserDao.create_user(session=session, user_model=model)
+    try:
+        return UserDao.create_user(session=session, user_model=model)
+    except Exception as ex:
+        print(f"The horror!!! Exception:{str(ex)}; traceback: {traceback.format_exc()}")

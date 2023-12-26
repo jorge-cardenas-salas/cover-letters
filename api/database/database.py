@@ -2,9 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
-# SQLALCHEMY_DATABASE_URL = "jdbc:mysql://jorge:Answer2Life=42_Mysql@localhost:3306/coverletter"
-SQLALCHEMY_DATABASE_URL = "mysql://root:Answer2Life=42_Mysql@localhost:3306/coverletter"
+SQLALCHEMY_DATABASE_URL = "mysql://dummy2:jcard_prof!7532MySql@localhost:3306/coverletter"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 

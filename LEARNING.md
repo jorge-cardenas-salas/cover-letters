@@ -300,28 +300,26 @@ CMD python /app/app.py
 Remember: this is about creating the **image**
 
 ```dockerfile
+# Specify the parent image (in this case Python)
 FROM python:3.8
 
-# Copy "local" files to the container (in the `/app` folder)
-COPY ./api /api
-COPY ./requirements.txt .
+# Name the working dir
+WORKDIR /app
 
-# Set the working dir to the root folder
-WORKDIR .
+# Copy "local" files to the container (in the `/app` folder)
+# Sample:
+COPY ./api/ ./api/
+COPY ./requirements.txt .
 
 # Install requirements in the container
 RUN pip install --upgrade pip
 # PRE-REQUISITE: Don't forget to refresh your requirements by doing : `pip freeze > requirements.txt`
 RUN pip install -r ./requirements.txt
-
-# Start uvicorn itself
-# It "might" be possible to run both my API (or multiple API's) and Consumer in the same image but not recommended
-CMD ["uvicorn", "api.endpoints:app", "--host=0.0.0.0", "--reload"]
 ```
 
 #### 2. Create the docker-compose.yaml
 
-Note how you could spin up multiple container (in different ports) for scalabitily here
+Note how you could spin up multiple container (in different ports) for escalabitily here
 
 ```yaml
 version: "3"
@@ -349,13 +347,166 @@ docker-compose up api
 
 <details open>
 
-### 1. Make sure your DB is up and running
+### How to prepare ahead of the Intuit interview?
+
+- [ ] Determine the minimum viable product "frame"
+  - Database connection
+  - API
+  - Unit tests
+  - Models / logic
+  - Data load
+- [ ] Implement the minimum viable frame into this project
+- [ ] Practice creating at least 4 blank projects "by hand"
+- [ ] Do at least 4 exercises from scratch
+    - [ ] Ideally, ask community for peer review
+- [ ] Create slides for personal presentation and portfolio
+
+### Basic (blank) set up
+
+<details> 
+
+#### n. Make sure the DB is up and running
 
 **IMPORTANT**: Consider creating a script for it
 
 1. From Windows, open `Services`
 2. Look for `MySQLServer`
 3. Hit `Start`
+
+#### n. Create basic folder structure
+
+**NOTE**: _italics_ mean folder, `code` means file
+
+- _api_
+    - _database_
+        - _daos_
+        - _table_models_
+        - `database.py`
+    - _models_
+    - `endpoints.py`
+- _tests_
+    - _unit_
+    - _feature_
+- _data_load_ (TBC)
+    - **What here?**
+- `Dockerfile`
+- `docker-compose.yaml`
+- `README.md`
+- `requirements.txt`
+
+#### n. Add requirements
+
+```commandline
+pip freeze > requirements.txt
+```
+
+#### n. Set up minimum Docker config
+
+`Dockerfile`:
+
+```dockerfile
+# Specify the parent image (in this case Python)
+FROM python:3.8
+
+# Name the working dir (will be set by Docker if we don't do it)
+WORKDIR /app
+
+# Copy "local" files to the container (in the `/app` folder)
+# Sample:
+COPY ./api/ ./api/
+COPY ./requirements.txt .
+
+# Install requirements in the container
+RUN pip install --upgrade pip
+# PRE-REQUISITE: Don't forget to refresh your requirements by doing : `pip freeze > requirements.txt`
+RUN pip install -r ./requirements.txt
+```
+
+`docker-compose.yaml` :
+```yaml
+version: "3"
+services:
+  # each service that could be executed from docker-compose goes here
+  # note that the name can be anything (I just named it api)
+  api:
+    build: . # config to build my image goes here... maybe? TODO: Investigate further
+    expose:
+      - 8000
+    ports: # Port for my API
+      - "8000:8000"
+    restart: "always"
+    command: [ "uvicorn", "api.endpoints:app", "--host=0.0.0.0", "--reload" ]
+    # watch allows the app to auto-reload on code changes, very practical
+    develop:
+      watch:
+        - action: sync+restart
+          # The path to watch changes for
+          path: api/
+          # the target (within the container) for the path
+          target: /app/api
+          ignore:
+            - __pycache__/
+            - .env
+            - .venv
+            - env/
+            - venv/
+            - .idea/
+        - action: rebuild
+          path: Dockerfile
+        - action: rebuild
+          path: docker-compose.yaml
+        - action: rebuild
+          path: requirements.txt
+```
+
+#### n. Create an endpoints file
+
+```python
+from fastapi import FastAPI, Depends
+
+from api.database.database import SessionLocal
+from sqlalchemy.orm import Session
+from api.models.user_model import UserModel
+from api.database.daos.user_dao import UserDao
+
+app = FastAPI()
+
+
+def get_session() -> SessionLocal:
+    """
+    We need to have an independent database session/connection (SessionLocal) per request, 
+    use the same session through all the request and then close it after the request
+    is finished.
+
+    Returns:
+        SessionLocal: A DB session to be used once
+    """
+    # fetch session
+    session = SessionLocal()
+    try:
+        # `yield` returns a generator for the session, aka an iterable that can only iterate once
+        # In this case it returns a new Session every time is called, but forgets the previous sessions immediately
+        yield session
+    finally:
+        session.close()
+```
+
+#### n. Checkpoint: Make sure you are doing good
+
+1. Start up the service
+```commandline
+docker-compose up api
+```
+2. See FastAPI:
+```
+http://localhost:8000/docs
+```
+
+</details> <!-- Basic (Blank) set up -->
+
+### Now for the specific project
+
+<details>
 
 ### 2. Create new project in PyCharm
 
@@ -378,6 +529,7 @@ class UserModel(BaseModel):
   Object-Relational (DB) model
 
 #### 3.n. Database
+</details> <!-- Now for the specific project -->
 
 </details>
 

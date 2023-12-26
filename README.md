@@ -128,13 +128,20 @@ details on the position
 - `pip install fastapi`
 - `pip install uvicorn`
 - `pip install sqlalchemy`
+- `pip install pydantic`
+- `pip install pytest`
+- `pip install pytest-bdd`
 
 ### How to run
 
 1. From the command line execute:
-
+Docker-less execution:
 ```commandline
 python -m uvicorn api.endpoints:app --reload
+```
+Docker execution (will auto-reload changes, so it might be a better choice):
+```commandline
+docker-compose watch api
 ```
 
 2. To see the docs (inc all endpoints):

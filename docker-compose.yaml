@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 services:
   # each service that could be executed from docker-compose goes here
   # note that the name can be anything (I just named it api)
@@ -9,6 +9,29 @@ services:
     ports: # Port for my API
       - "8000:8000"
     restart: "always"
+    command: [ "uvicorn", "api.endpoints:app", "--host=0.0.0.0", "--reload" ]
+    # watch allows the app to auto-reload on code changes, very practical
+    develop:
+      watch:
+        - action: sync+restart
+          # The path to watch changes for
+          path: api/
+          # the target (within the container) for the path
+          target: /app/api
+          ignore:
+            - __pycache__/
+            - .env
+            - .venv
+            - env/
+            - venv/
+            - .idea/
+        - action: rebuild
+          path: Dockerfile
+        - action: rebuild
+          path: docker-compose.yaml
+        - action: rebuild
+          path: requirements.txt
+
 #    depends_on: # Used to specify the order of dependencies
 #      - my_other_service # TODO: this is how we make sure the API should be UP before starting the Consumer
 
