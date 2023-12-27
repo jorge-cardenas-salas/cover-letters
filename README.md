@@ -102,11 +102,11 @@ details on the position
     - Applications
         - Jobs
 - UI: TBD
-- API / Microservices:
-    - CRUD Profile
-    - Create Cover Letters
-    - Generate Docs
-- Kafka:
+- API / Microservices: 
+	- CRUD Profile
+	- Create Cover Letters
+	- Generate Docs
+- Kafka: 
 - Docker:
 - Kubernetes:
 - Microservices:
@@ -129,6 +129,9 @@ details on the position
 - `pip install uvicorn`
 - `pip install sqlalchemy`
 - `pip install pydantic`
+- `pip install mssql`
+- `pip install sqlserver`
+- `pip install pyodbc`
 - `pip install pytest`
 - `pip install pytest-bdd`
 

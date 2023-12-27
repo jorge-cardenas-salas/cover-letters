@@ -1,16 +1,18 @@
-from api.database.database import Base
 from sqlalchemy import Column, BigInteger, String
 from sqlalchemy.orm import relationship
+
+from api.database.database import Base
 
 
 class UserTableRow(Base):
     __tablename__ = "tblUser"
+    __table_args__ = {"schema": "coverletter"}
 
     """
     SQLAlchemy ORM (Object Relational Model) representation of the table
     """
-    id = Column(BigInteger, primary_key=True, unique=True, index=True)
-    userName = Column(String, unique=True, index=False)
+    id = Column(BigInteger, primary_key=True, unique=True, index=True, autoincrement=False)
+    name = Column(String, unique=True, index=False)
     email = Column(String, unique=True, index=False)
 
     # TODO: Add relationships here, to link skills to users and other tables

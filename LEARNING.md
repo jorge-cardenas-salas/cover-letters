@@ -39,18 +39,19 @@ This file is just to add notes and background about the technologies used in thi
 - [x] First endpoint to add users
 - [x] Dockerize my API
     - [x] Use `requirements.txt`
-- [ ] Enrich add users endpoint to
-  optionally [include skills](https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3)
+- [x] Connect to cloud SQL (Azure)
 - [ ] Add automated testing
     - [ ] Unit tests
     - [ ] Feature tests (Cucumber / Gherkin)
-- [ ] Kubernetize my API
+- [ ] Enrich add users endpoint to
+  optionally [include skills](https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3)
 - [ ] Feature: load data from:
     - [ ] A file
     - [ ] Others? (TBD)
 - [ ] Feature: upload files (Cover letters/Resumes)
 - [ ] Feature: Create stuff from templates (TBD, the Consumer might a better place for it)
 - [ ] Add endpoint to PULL data from the DB
+- [ ] Kubernetize my API
 - [ ] Basic Kafka
     - [ ] Produce messages from the API
     - [ ] Consume messages
@@ -287,6 +288,24 @@ RUN make /app
 CMD python /app/app.py
 ```
 
+- Trivia: you can have multiple `FROM` sections to pull assorted functionality from different places:
+
+```dockerfile
+FROM ubuntu:18.04
+RUN apt-get update
+RUN apt-get install -y odbcinst
+RUN apt install -y unixodbc-dev
+RUN apt-get install -y unixodbc
+
+FROM Python:3.11
+COPY . /app
+RUN make /app
+CMD python /app/app.py
+```
+
+- `requirements.txt`
+    - You can make this one generic, i.e. don't specify a version, let `pip` decide
+
 #### docker-compose
 
 - "Adds" a new **writable** layer on top of the image
@@ -300,8 +319,8 @@ CMD python /app/app.py
 Remember: this is about creating the **image**
 
 ```dockerfile
-# Specify the parent image (in this case Python)
-FROM python:3.8
+# We copy the kernel functionality here. I'm using Python but it can be Devian, Ubuntu, ETC
+FROM python:3.11
 
 # Name the working dir
 WORKDIR /app

@@ -1,11 +1,11 @@
 import traceback
 
 from fastapi import FastAPI, Depends
-
-from api.database.database import SessionLocal
 from sqlalchemy.orm import Session
-from api.models.user_model import UserModel
+
 from api.database.daos.user_dao import UserDao
+from api.database.database import SessionLocal
+from api.models.user_model import UserModel
 
 app = FastAPI()
 
