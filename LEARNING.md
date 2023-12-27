@@ -37,8 +37,9 @@ This file is just to add notes and background about the technologies used in thi
 
 - [x] Set up DB
 - [x] First endpoint to add users
-- [ ] Dockerize my API
-    - [ ] Use `requirements.txt`
+- [x] Dockerize my API
+    - [x] Use `requirements.txt`
+- [x] Connect to cloud SQL (Azure)
 - [ ] Kubernetize my API
 - [ ] Add automated testing
     - [ ] Unit tests
@@ -281,6 +282,24 @@ RUN make /app
 CMD python /app/app.py
 ```
 
+- Trivia: you can have multiple `FROM` sections to pull assorted functionality from different places:
+
+```dockerfile
+FROM ubuntu:18.04
+RUN apt-get update
+RUN apt-get install -y odbcinst
+RUN apt install -y unixodbc-dev
+RUN apt-get install -y unixodbc
+
+FROM Python:3.11
+COPY . /app
+RUN make /app
+CMD python /app/app.py
+```
+
+- `requirements.txt`
+    - You can make this one generic, i.e. don't specify a version, let `pip` decide
+
 #### docker-compose
 
 - "Adds" a new **writable** layer on top of the image
@@ -294,7 +313,8 @@ CMD python /app/app.py
 Remember: this is about creating the **image**
 
 ```dockerfile
-FROM python:3.8
+# We copy the kernel functionality here. I'm using Python but it can be Devian, Ubuntu, ETC
+FROM python:3.11
 
 # Copy "local" files to the container (in the `/app` folder)
 COPY ./api /api
