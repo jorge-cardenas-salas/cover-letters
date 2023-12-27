@@ -1,14 +1,14 @@
 from sqlalchemy.orm import Session
 
-from api.models.user_model import UserModel
 from api.database.table_models.user_table_row import UserTableRow
+from api.models.user_model import UserModel
 
 
 class UserDao:
     @staticmethod
     def create_user(session: Session, user_model: UserModel) -> UserTableRow:
         # Create the row model from the user model
-        user_row = UserTableRow(userName=user_model.name, email=user_model.email)
+        user_row = UserTableRow(name=user_model.name, email=user_model.email, id=user_model.id)
         session.add(user_row)
         session.commit()
 
