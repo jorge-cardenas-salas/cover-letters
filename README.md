@@ -73,9 +73,9 @@ details on the position
     - Create a document (markdown? google docs?) with the remaining jobs
         - Pull keywords (skills / role) and put them in the document
         - Document should be able to mark jobs as:
-          - pending
-          - applied
-          - discarded
+            - pending
+            - applied
+            - discarded
     - Resources:
         - [Google Search](https://www.google.com/search?q=does+linkedin+have+a+public+ap)
         - [Tutorial(ish)](https://nubela.co/blog/ultimate-guide-to-linkedin-api_people-profile-api_with-python-examples/)
@@ -87,7 +87,7 @@ details on the position
     - Use the document from `PositionMatch` to pull jobs pending to apply
     - Extract keywords for the JD
     - Use the API to match jobs
-      - The API will automatically generate CoverLetters and Resumes
+        - The API will automatically generate CoverLetters and Resumes
 
 ### Practice points:
 
@@ -102,11 +102,11 @@ details on the position
     - Applications
         - Jobs
 - UI: TBD
-- API / Microservices: 
-	- CRUD Profile
-	- Create Cover Letters
-	- Generate Docs
-- Kafka: 
+- API / Microservices:
+    - CRUD Profile
+    - Create Cover Letters
+    - Generate Docs
+- Kafka:
 - Docker:
 - Kubernetes:
 - Microservices:
@@ -138,11 +138,14 @@ details on the position
 ### How to run
 
 1. From the command line execute:
-Docker-less execution:
+   Docker-less execution:
+
 ```commandline
 python -m uvicorn api.endpoints:app --reload
 ```
+
 Docker execution (will auto-reload changes, so it might be a better choice):
+
 ```commandline
 docker-compose watch api
 ```

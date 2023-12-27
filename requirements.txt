@@ -5,3 +5,5 @@ pydantic
 mssql
 sqlserver
 pyodbc
+pytest
+pytest-bdd

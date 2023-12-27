@@ -1,5 +1,5 @@
-from behave import when, then
 import requests
+from behave import when, then
 
 
 # from unittest import mock

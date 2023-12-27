@@ -25,12 +25,12 @@ services:
             - env/
             - venv/
             - .idea/
-        - action: rebuild
-          path: Dockerfile
-        - action: rebuild
-          path: docker-compose.yaml
-        - action: rebuild
-          path: requirements.txt
+            - action: rebuild
+              path: Dockerfile
+            - action: rebuild
+              path: docker-compose.yaml
+            - action: rebuild
+              path: requirements.txt
 
 #    depends_on: # Used to specify the order of dependencies
 #      - my_other_service # TODO: this is how we make sure the API should be UP before starting the Consumer

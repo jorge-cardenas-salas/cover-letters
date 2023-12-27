@@ -1,5 +1,4 @@
 from sqlalchemy import Column, BigInteger, String
-from sqlalchemy.orm import relationship
 
 from api.database.database import Base
 

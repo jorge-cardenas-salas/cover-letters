@@ -369,11 +369,11 @@ docker-compose up api
 ### How to prepare ahead of the Intuit interview?
 
 - [ ] Determine the minimum viable product "frame"
-  - Database connection
-  - API
-  - Unit tests
-  - Models / logic
-  - Data load
+    - Database connection
+    - API
+    - Unit tests
+    - Models / logic
+    - Data load
 - [ ] Implement the minimum viable frame into this project
 - [ ] Practice creating at least 4 blank projects "by hand"
 - [ ] Do at least 4 exercises from scratch
@@ -442,6 +442,7 @@ RUN pip install -r ./requirements.txt
 ```
 
 `docker-compose.yaml` :
+
 ```yaml
 version: "3"
 services:
@@ -513,10 +514,13 @@ def get_session() -> SessionLocal:
 #### n. Checkpoint: Make sure you are doing good
 
 1. Start up the service
+
 ```commandline
 docker-compose up api
 ```
+
 2. See FastAPI:
+
 ```
 http://localhost:8000/docs
 ```
@@ -548,6 +552,7 @@ class UserModel(BaseModel):
   Object-Relational (DB) model
 
 #### 3.n. Database
+
 </details> <!-- Now for the specific project -->
 
 </details>
