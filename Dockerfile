@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy "local" files to the container (in the `/app` folder)
 COPY ./api/ ./api/
+COPY ./tests/ ./tests/
 COPY ./requirements.txt .
 
 # Install requirements in the container

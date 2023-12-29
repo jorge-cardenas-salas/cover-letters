@@ -3,8 +3,8 @@ import traceback
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
-from api.database.daos.user_dao import UserDao
-from api.database.database import SessionLocal
+from api.database.daos.dao import Dao
+from api.database.database import SessionLocal, Base, engine
 from api.models.user_model import UserModel
 
 app = FastAPI()
@@ -44,6 +44,6 @@ def add_users(model: UserModel, session: Session = Depends(get_session)):
         session (Session): The DB session to be used to store the data
     """
     try:
-        return UserDao.create_user(session=session, user_model=model)
+        return Dao.create_user(session=session, user_model=model)
     except Exception as ex:
         print(f"The horror!!! Exception:{str(ex)}; traceback: {traceback.format_exc()}")

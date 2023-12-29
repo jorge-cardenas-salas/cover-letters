@@ -4,12 +4,16 @@ services:
   # note that the name can be anything (I just named it api)
   api:
     build: . # config to build my image goes here... maybe? TODO: Investigate further
+    container_name: cover-letter-api
     expose:
       - 8000
     ports: # Port for my API
       - "8000:8000"
     restart: "always"
-    command: [ "uvicorn", "api.endpoints:app", "--host=0.0.0.0", "--reload" ]
+    command: [ "uvicorn", "api.endpoints:app", "--host=0.0.0.0", "--reload" , "--reload-include='*.py'" ]
+    # The following should help us avoid rebuilding every time
+    volumes:
+      - ./api/:/app/api
     # watch allows the app to auto-reload on code changes, very practical
     develop:
       watch:
@@ -31,11 +35,3 @@ services:
           path: docker-compose.yaml
         - action: rebuild
           path: requirements.txt
-
-#    depends_on: # Used to specify the order of dependencies
-#      - my_other_service # TODO: this is how we make sure the API should be UP before starting the Consumer
-
-#networks:
-#  cover-letter:
-#    external: false
-#

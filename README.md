@@ -133,7 +133,7 @@ details on the position
 - `pip install sqlserver`
 - `pip install pyodbc`
 - `pip install pytest`
-- `pip install pytest-bdd`
+- `pip install behave`
 
 ### How to run
 

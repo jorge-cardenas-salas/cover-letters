@@ -2,22 +2,18 @@ Feature: AddUsers
   # Add users with assorted combinations
 
   Scenario: Add Basic User
-    When The following is posted to the "add-users" endpoint
+    When The following is posted to the "add-users" endpoint using PUT
     """
     {
-        "id": 1,
         "name": "Jorge",
-        "email": "jcardenas.professional@outlook.com",
-        "skills": [
-            {
-                "name": "Python",
-                "level": 3
-            },
-            {
-                "name": "SQL",
-                "level": 3
-            }
-        ]
+        "email": "jcardenas.professional@outlook.com"
     }
     """
-    Then Dummy Success
+    Then response should be
+    """
+    {
+      "name": "Jorge",
+      "email": "jcardenas.professional@outlook.com",
+      "id": 1
+    }
+    """

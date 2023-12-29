@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS tblUser;
+CREATE TABLE tblUser
+(
+    id    INT          NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name  VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NULL
+);
+
+CREATE TABLE tblSkill
+(
+    id    INT          NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name  VARCHAR(100) NOT NULL,
+    level INT          NOT NULL DEFAULT 0
+);

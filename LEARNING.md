@@ -4,30 +4,46 @@ This file is just to add notes and background about the technologies used in thi
 
 <!-- TOC -->
 
-* [Learning Notes](#learning-notes)
-    * [Project Roadmap](#project-roadmap)
-    * [To learn](#to-learn)
-    * [FastAPI](#fastapi)
-    * [SQLAlchemy](#sqlalchemy)
-    * [API/HTTP Request Methods](#apihttp-request-methods)
-        * [HTTP POST request](#http-post-request)
-        * [HTTP GET request](#http-get-request)
-        * [HTTP PUT request](#http-put-request)
-        * [HTTP HEAD request](#http-head-request)
-        * [HTTP PATCH request](#http-patch-request)
-        * [HTTP DELETE request](#http-delete-request)
-    * [YAML](#yaml)
-        * [What it tries to solve](#what-it-tries-to-solve)
-        * [Rules](#rules)
-    * [Docker](#docker)
-        * [Concepts](#concepts)
-        * [Dockerfile vs. docker-compose](#dockerfile-vs-docker-compose)
-            * [Dockerfile](#dockerfile)
-            * [docker-compose](#docker-compose)
-        * [For my app](#for-my-app)
-            * [1. Create a Dockerfile](#1-create-a-dockerfile)
-            * [2. Create the docker-compose.yaml](#2-create-the-docker-composeyaml)
-            * [3. Start up the container](#3-start-up-the-container)
+* [Project Roadmap](#project-roadmap)
+* [To learn](#to-learn)
+* [FastAPI](#fastapi)
+* [SQLAlchemy](#sqlalchemy)
+* [API/HTTP Request Methods](#apihttp-request-methods)
+    * [HTTP POST request](#http-post-request)
+    * [HTTP GET request](#http-get-request)
+    * [HTTP PUT request](#http-put-request)
+    * [HTTP HEAD request](#http-head-request)
+    * [HTTP PATCH request](#http-patch-request)
+    * [HTTP DELETE request](#http-delete-request)
+* [YAML](#yaml)
+    * [What it tries to solve](#what-it-tries-to-solve)
+    * [Rules](#rules)
+* [Docker](#docker)
+    * [Concepts](#concepts)
+    * [Dockerfile vs. docker-compose](#dockerfile-vs-docker-compose)
+        * [Dockerfile](#dockerfile)
+        * [docker-compose](#docker-compose)
+    * [For my app](#for-my-app)
+        * [1. Create a Dockerfile](#1-create-a-dockerfile)
+        * [2. Create the docker-compose.yaml](#2-create-the-docker-composeyaml)
+        * [3. Start up the container](#3-start-up-the-container)
+* [Testing](#testing)
+* [General: What to set up for blank project](#general-what-to-set-up-for-blank-project)
+    * [How to prepare ahead of the Intuit interview?](#how-to-prepare-ahead-of-the-intuit-interview)
+    * [Basic (blank) set up](#basic-blank-set-up)
+        * [n. Make sure the DB is up and running](#n-make-sure-the-db-is-up-and-running)
+        * [n. Create basic folder structure](#n-create-basic-folder-structure)
+        * [n. Add requirements](#n-add-requirements)
+        * [n. Set up minimum Docker config](#n-set-up-minimum-docker-config)
+        * [n. Create an endpoints file](#n-create-an-endpoints-file)
+        * [n. Checkpoint: Make sure you are doing good](#n-checkpoint-make-sure-you-are-doing-good)
+        * [n. Testing framework](#n-testing-framework)
+            * [Integration tests](#integration-tests)
+    * [Now for the specific project](#now-for-the-specific-project)
+    * [2. Create new project in PyCharm](#2-create-new-project-in-pycharm)
+    * [3. Basic set up in PyCharm](#3-basic-set-up-in-pycharm)
+        * [3.n. Create models](#3n-create-models)
+        * [3.n. Database](#3n-database)
 
 <!-- TOC -->
 
@@ -87,6 +103,8 @@ This file is just to add notes and background about the technologies used in thi
 - [ ] What is the `__init__.py` (in the Python package folder) used for?
 - [ ] Flask vs Uvicorn
 - [ ] Learn what each section of `docker-compose.yaml` does
+- [ ] `yield` vs `return`
+- [ ] What is `sqllite` exactly? Is it good for local testing?
 
 </details>
 
@@ -362,6 +380,39 @@ docker-compose up api
 
 </details>
 
+## Testing
+
+<details>
+
+- `pytest` provides unit testing
+- BDD
+    - Two options: `pytest-bdd` or `behave`
+    - In theory `behave` is more flexible (e.g. file and method conventions) and easier, so that's what I'm running with
+- pytest fixtures are used for dependency injection and app state
+    - They will NOT be used in this project (using FastAPI dependency overrides instead)
+- Override DB connection and test endpoints locally
+    - Regular flow (prod/dev):
+        1. engine is created by connecting to the URL (`database.py`)
+        2. A `SessionLocal` is created based on the engine (`database.py`)
+        3. The `Base` (`declarative_base`) is created here to add our ORM models to
+        4. `app = FastAPI()` creates our API (`endpoints.py`)
+        5. A method `get_session()` yields the `SessionLocal`. **Important**, this is where the magic happens
+        6. In our `app` (for each endpoint) we introduce a dependency to the
+           `session` (`add_users(model: UserModel, session: Session = Depends(get_session))`)
+        7. The `session` gets passed down to the DAO for database usage
+    - For tests, we need to override using fixtures (test file, UT or `steps.py`:
+        1. We import `app` and `get_session` from our `endpoints.py` file, and the `Base` from `database.py`
+        2. We create a "shadow" engine and session, connecting to the dummy DB (`sqlite` ?)
+        3. We create a test version of `get_session()` (See step `e.` previously)
+        4. Just to be sure, let's drop and re-create our tables: `Base.metadata.drop_all(engine)`
+        5. Now re-create our ORM models in testing: `Base.metadata.create_all(bind=engine)`
+        6. Super cool: we override the session like so: `app.dependency_overrides[get_session] = override_get_session`
+        7. We leverage `TestClient` from FastAPI to create a testable version of our API: `client = TestClient(app)`
+        8. And now we are ready to implement our tests: `response = client.get("/endpointName/")`
+- Pro-tip: You can do ste-by-step debugging by using PyCharm's integrated FastAPI Run/Debug configuration
+
+</details>
+
 ## General: What to set up for blank project
 
 <details open>
@@ -372,6 +423,7 @@ docker-compose up api
     - Database connection
     - API
     - Unit tests
+    - Logging
     - Models / logic
     - Data load
 - [ ] Implement the minimum viable frame into this project
@@ -406,6 +458,8 @@ docker-compose up api
 - _tests_
     - _unit_
     - _feature_
+        - _steps_
+            - `steps.py`
 - _data_load_ (TBC)
     - **What here?**
 - `Dockerfile`
@@ -419,13 +473,30 @@ docker-compose up api
 pip freeze > requirements.txt
 ```
 
+Alternatively, you can leave your requirements as open as possible and let Docker figure out versioning:
+
+```requirements
+fastapi
+sqlalchemy
+pydantic
+pytest
+behave
+requests
+uvicorn
+mssql
+sqlserver
+pyodbc
+starlette.testclient
+httpx
+```
+
 #### n. Set up minimum Docker config
 
 `Dockerfile`:
 
 ```dockerfile
-# Specify the parent image (in this case Python)
-FROM python:3.8
+# Specify the parent image to pull core functionality from (in this case Python)
+FROM python:3.11
 
 # Name the working dir (will be set by Docker if we don't do it)
 WORKDIR /app
@@ -439,6 +510,26 @@ COPY ./requirements.txt .
 RUN pip install --upgrade pip
 # PRE-REQUISITE: Don't forget to refresh your requirements by doing : `pip freeze > requirements.txt`
 RUN pip install -r ./requirements.txt
+```
+
+**IMPORTANT**: If you are using MS SQL things are more complex, make sure to add to `Dockerfile`:
+
+```dockerfile
+# Next section to be able to connect to Azure
+## Make sure we get the latest version of our requirements
+RUN apt-get update
+## Start with installations
+RUN apt-get install -y odbcinst
+## This gets the MS SQL Drivers for Debian (apparently the default for the image is Debian)
+### Get the public keys to be able to pull the sources from MS
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+### Get the drivers
+RUN curl https://packages.microsoft.com/config/debian/9/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
+RUN apt update
+### Annoying, I need to accept the EULA. This was a HEADACHE to figure out
+RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
+RUN apt install -y unixodbc-dev
+RUN apt-get install -y unixodbc
 ```
 
 `docker-compose.yaml` :
@@ -455,7 +546,11 @@ services:
     ports: # Port for my API
       - "8000:8000"
     restart: "always"
+    # You could put the command in Dockerfile. Dealer's choice
     command: [ "uvicorn", "api.endpoints:app", "--host=0.0.0.0", "--reload" ]
+    # This should prevent us from having to rebuild our image for every change
+    volumes:
+      - ./api/:/app/api
     # watch allows the app to auto-reload on code changes, very practical
     develop:
       watch:
@@ -487,7 +582,7 @@ from fastapi import FastAPI, Depends
 from api.database.database import SessionLocal
 from sqlalchemy.orm import Session
 from api.models.user_model import UserModel
-from api.database.daos.user_dao import UserDao
+from api.database.daos.dao import Dao
 
 app = FastAPI()
 
@@ -523,6 +618,43 @@ docker-compose up api
 
 ```
 http://localhost:8000/docs
+```
+
+#### n. Testing framework
+
+Add requirements if you don't have them already:
+
+```requirements
+pytest
+behave
+requests
+starlette.testclient
+httpx
+```
+
+##### Integration tests
+
+1. Let PyCharm do the deed for you. Just create a `.feature` file, example:
+
+```gherkin
+Feature: AddUsers
+  # Add users with assorted combinations
+
+  Scenario: Add Data with endpoint
+    When The following is posted to the "add-users" endpoint using PUT
+    """
+    {"input":"dummy input"}
+    """
+    Then response should be
+    """
+    {"TBD":"TBD"}
+    """
+```
+
+2. Now update the `steps.py`
+
+```python
+## TBD
 ```
 
 </details> <!-- Basic (Blank) set up -->
