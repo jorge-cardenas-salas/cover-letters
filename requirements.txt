@@ -1,7 +1,12 @@
 fastapi
-uvicorn
 sqlalchemy
 pydantic
+pytest
+behave
+requests
+uvicorn
 mssql
 sqlserver
 pyodbc
+starlette.testclient
+httpx

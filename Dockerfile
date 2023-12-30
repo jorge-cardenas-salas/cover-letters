@@ -1,12 +1,14 @@
 # We copy the kernel functionality here. I'm using Python but it can be Devian, Ubuntu, ETC
 FROM python:3.11
 
-# Copy "local" files to the container (in the `/app` folder)
-COPY ./api /api
-COPY ./requirements.txt .
+# Name the working dir
+WORKDIR /app
 
-# Set the working dir to the root folder
-WORKDIR .
+# Copy "local" files to the container (in the `/app` folder)
+COPY ./api/ ./api/
+# We ONLY need to copy the tests if we will be settting up a Docker service for testing
+COPY ./tests/ ./tests/
+COPY ./requirements.txt .
 
 # Install requirements in the container
 RUN pip install --upgrade pip
@@ -28,7 +30,3 @@ RUN apt update
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
 RUN apt install -y unixodbc-dev
 RUN apt-get install -y unixodbc
-
-# Start uvicorn itself
-# TODO: Still confused why we can't do this through docker-compose.yaml
-CMD ["uvicorn", "api.endpoints:app", "--host=0.0.0.0", "--reload"]

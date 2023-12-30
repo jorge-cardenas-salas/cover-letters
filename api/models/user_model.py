@@ -9,7 +9,7 @@ class UserModel(BaseModel):
     id: Optional[int] = None
     name: str
     email: str
-    skills: List[SkillModel]
+    skills: Optional[List[SkillModel]] = []
 
     # Now, in the Pydantic models, add an internal Config class.
     # This Config class is used to provide configurations to Pydantic.
