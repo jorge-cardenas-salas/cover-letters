@@ -29,6 +29,18 @@ services:
             - env/
             - venv/
             - .idea/
+        - action: sync+restart
+          # The path to watch changes for
+          path: common/
+          # the target (within the container) for the path
+          target: /app/common
+          ignore:
+            - __pycache__/
+            - .env
+            - .venv
+            - env/
+            - venv/
+            - .idea/
         - action: rebuild
           path: Dockerfile
         - action: rebuild
