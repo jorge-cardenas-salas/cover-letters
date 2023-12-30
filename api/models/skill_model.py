@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from api.constants import ExpertiseLevel
+from common.constants import ExpertiseLevel
 
 
 class SkillModel(BaseModel):

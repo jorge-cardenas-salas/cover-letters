@@ -417,6 +417,117 @@ docker-compose up api
 
 </details>
 
+## Logging
+
+<details>
+
+- no need for any installs, just `import logging`
+- Remember the default level is WARNING, if you want INFO's you'll have to configure it
+    - simply do `logging.basicConfig(level.logging.DEBUG)`
+- to log to a file: `logging.basicConfig(filename='MyFile.log', level.logging.DEBUG)`
+- Formatting:
+    - [Reference](https://docs.python.org/3/library/logging.html#logrecord-attributes)
+    - `logging.basicConfig(filename='MyFile.log', level.logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')`
+- Default logger is the `root` logger, which we may want to avoid for complex apps
+    - The first config is the one that takes over, hence, confusion
+- A logger will help us create a logger per class/module, etc: `logger=logging.getLogger(__name__)`
+    - `name` is of course the name of the method invoking
+- IMPORTANT: difference between `logger.error()` and `logger.exception()` is that `exception()` gives the stacktrace
+
+```python
+import sys
+import logging
+
+logger = logging.getLogger(__name__)
+file_handler = logging.FileHandler('myLoggingFile.log')
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+file_handler.setFormatter(formatter)
+
+"""
+Option B: One handler per log level. You can have as many as you want 
+"""
+error_handler = logging.FileHandler('onlyErrors.log')
+error_handler.formatter = formatter
+error_handler.setLevel(logging.ERROR)
+
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.formatter = formatter
+console_handler.level = logging.DEBUG
+
+# We add all our handlers here
+logger.addHandler(file_handler)
+logger.addHandler(error_handler)
+logger.addHandler(console_handler)
+
+
+class MyStuff:
+    def my_method(self):
+        try:
+        # do some logic
+        except Exception as ex:
+            logger.error(ex.message())
+```
+
+### Important: Use a custom logger class
+
+Originally I had set up a custom logging functionality as a stand-alone function, but for some reason it wasn't working
+on FastAPI:
+
+```python
+### FILE: utilities.py
+def get_logger():
+    logger = logging.getLogger(logger_name)
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(DEFAULT_LOG_FORMAT)
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(formatter)
+
+    logger.addHandler(console_handler)
+    return logger
+
+
+### FILE: endpoints.py
+from common.utilities import get_logger
+
+app = FastAPI()
+logger = get_logger()
+```
+
+So, now I moved that into a class and I create an instance of that class, not sure why this DOES work, maybe because I'm
+adding state to my logger?
+
+```python
+### FILE: utilities.py
+class DefaultLogger:
+    """
+    Having a class is a bit convoluted, but necessary since logging kept failing when I initialized
+    the log from endpoints.py without a wrapper class. My theory is that this happened because I needed to add state
+    """
+
+    def __init__(self):
+        self.logger = logging.getLogger(logger_name)
+        self.logger.setLevel(logging.DEBUG)
+        formatter = logging.Formatter(DEFAULT_LOG_FORMAT)
+
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(formatter)
+
+        self.logger.addHandler(console_handler)
+
+    def get_logger(self) -> Logger:
+        return self.logger
+
+
+### FILE: endpoints.py
+from common.utilities import DefaultLogger
+
+app = FastAPI()
+logger = DefaultLogger().get_logger()
+```
+
+</details>
+
 ## General: What to set up for blank project
 
 <details open>
@@ -460,6 +571,9 @@ docker-compose up api
         - `database.py`
     - _models_
     - `endpoints.py`
+- _common_
+    - `constants.py`
+    - `utilities.py`
 - _tests_
     - _unit_
     - _feature_
@@ -509,6 +623,9 @@ WORKDIR /app
 # Copy "local" files to the container (in the `/app` folder)
 # Sample:
 COPY ./api/ ./api/
+COPY ./common/ ./common/
+# Super important, don't forget to put the DB file in the image if you are running local
+COPY ./coverletter.db ./
 COPY ./requirements.txt .
 
 # Install requirements in the container

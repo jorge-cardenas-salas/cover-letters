@@ -1,13 +1,14 @@
-import traceback
-
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
 from api.database.daos.dao import Dao
 from api.database.database import SessionLocal
 from api.models.user_model import UserModel
+from common.utilities import DefaultLogger
 
 app = FastAPI()
+
+logger = DefaultLogger(use_file=True).get_logger()
 
 
 def get_session() -> SessionLocal:
@@ -25,6 +26,7 @@ def get_session() -> SessionLocal:
         SessionLocal: A DB session to be used once
     """
     # fetch session
+    logger.info("Regular get_session")
     session = SessionLocal()
     try:
         # `yield` returns a generator for the session, aka an iterable that can only iterate once
@@ -43,7 +45,11 @@ def add_users(model: UserModel, session: Session = Depends(get_session)):
         model (UserModel): The user data to be added
         session (Session): The DB session to be used to store the data
     """
+    # logger = get_local_logger()
+    logger.info("Adding new user")
     try:
-        return Dao.create_user(session=session, user_model=model)
+        new_user = Dao.create_user(session=session, user_model=model)
+        logger.info(f"New user created, id: {new_user.id}")
+        return new_user
     except Exception as ex:
-        print(f"The horror!!! Exception:{str(ex)}; traceback: {traceback.format_exc()}")
+        logger.exception(str(ex))

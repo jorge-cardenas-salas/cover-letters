@@ -7,16 +7,19 @@ from sqlalchemy.orm import sessionmaker
 
 from api.database.database import Base
 from api.endpoints import app, get_session
+from common.utilities import DefaultLogger
 
 test_client = TestClient(app)
 
-engine = create_engine("sqlite:///./test.db", connect_args={"check_same_thread": False})
+engine = create_engine("sqlite:///./test.db")
 Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
 TestSessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+logger = DefaultLogger(logger_name="FeatureTestLogger", use_file=True, filename="featureTest").get_logger()
 
 
 def override_get_session() -> TestSessionLocal:
+    logger.info("Overriding get_session")
     session = TestSessionLocal()
     yield session
     session.rollback()
@@ -36,7 +39,7 @@ def step_impl(context, endpoint_name):
         else:
             context.success = False
     except Exception as ex:
-        print(f"Something horrible happened!!: {str(ex)}")
+        logger.exception(str(ex))
         context.success = False
 
 
@@ -50,7 +53,7 @@ def step_impl(context, endpoint_name):
         else:
             context.success = False
     except Exception as ex:
-        print(f"Something horrible happened!!: {str(ex)}")
+        logger.exception(str(ex))
         context.success = False
 
 
