@@ -4,7 +4,7 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
 from api.database.daos.dao import Dao
-from api.database.database import SessionLocal, Base, engine
+from api.database.database import SessionLocal
 from api.models.user_model import UserModel
 
 app = FastAPI()

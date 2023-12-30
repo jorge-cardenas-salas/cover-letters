@@ -16,11 +16,8 @@ class UserTableRow(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(nullable=True)
+    # relationship() can be backtraced, but keeping it simple for this example
     skills: Mapped[List["SkillTableRow"]] = relationship()
-
-    # TODO: Add relationships here, to link skills to users and other tables
-    # https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3
-    # skills = relationship("SkillTableRow", back_populates="user")
 
 
 class SkillTableRow(Base):

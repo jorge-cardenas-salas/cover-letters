@@ -35,6 +35,9 @@ This file is just to add notes and background about the technologies used in thi
         * [n. Create basic folder structure](#n-create-basic-folder-structure)
         * [n. Add requirements](#n-add-requirements)
         * [n. Set up minimum Docker config](#n-set-up-minimum-docker-config)
+        * [n. Create Models](#n-create-models)
+        * [n. Create Database Models](#n-create-database-models)
+        * [n. Create DAO(s)](#n-create-daos)
         * [n. Create an endpoints file](#n-create-an-endpoints-file)
         * [n. Checkpoint: Make sure you are doing good](#n-checkpoint-make-sure-you-are-doing-good)
         * [n. Testing framework](#n-testing-framework)
@@ -58,9 +61,10 @@ This file is just to add notes and background about the technologies used in thi
 - [x] Connect to cloud SQL (Azure)
 - [ ] Add automated testing
     - [ ] Unit tests
-    - [ ] Feature tests (Cucumber / Gherkin)
-- [ ] Enrich add users endpoint to
+    - [x] Feature tests (Cucumber / Gherkin)
+- [x] Enrich add users endpoint to
   optionally [include skills](https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3)
+- [ ] Add logging
 - [ ] Feature: load data from:
     - [ ] A file
     - [ ] Others? (TBD)
@@ -99,12 +103,12 @@ This file is just to add notes and background about the technologies used in thi
 - [ ] Also learn about GraphQL
     - [ ] How does it compare to REST for ease of implementation?
     - [ ] How does it compare to REST in other areas (e.g. performance)
-- [ ] Add/use `requirements.txt` in my application
+- [x] Add/use `requirements.txt` in my application
 - [ ] What is the `__init__.py` (in the Python package folder) used for?
 - [ ] Flask vs Uvicorn
 - [ ] Learn what each section of `docker-compose.yaml` does
-- [ ] `yield` vs `return`
-- [ ] What is `sqllite` exactly? Is it good for local testing?
+- [x] `yield` vs `return`
+- [x] What is `sqllite` exactly? Is it good for local testing?
 
 </details>
 
@@ -402,7 +406,7 @@ docker-compose up api
         7. The `session` gets passed down to the DAO for database usage
     - For tests, we need to override using fixtures (test file, UT or `steps.py`:
         1. We import `app` and `get_session` from our `endpoints.py` file, and the `Base` from `database.py`
-        2. We create a "shadow" engine and session, connecting to the dummy DB (`sqlite` ?)
+        2. We create a "shadow" engine and session, connecting to the dummy DB
         3. We create a test version of `get_session()` (See step `e.` previously)
         4. Just to be sure, let's drop and re-create our tables: `Base.metadata.drop_all(engine)`
         5. Now re-create our ORM models in testing: `Base.metadata.create_all(bind=engine)`
@@ -451,6 +455,7 @@ docker-compose up api
 - _api_
     - _database_
         - _daos_
+            - `dao.py`
         - _table_models_
         - `database.py`
     - _models_
@@ -574,6 +579,100 @@ services:
           path: requirements.txt
 ```
 
+#### n. Create Models
+
+- This section refers to the **business** models, database models (rows) will be created in a bit
+- For simplicity both models are in the same file, they should be separate in the finalized version
+
+```python
+from typing import Optional, List, Optional
+from pydantic import BaseModel
+
+
+# This is called "child" because it mimics a 1..N relationship
+class ChildModel(BaseModel):
+    name: str
+    parent_id: Optional[int] = None
+
+    # SUPER important: This tells pydantic that this an ORM (database)
+    class Config:
+        orm_mode = True
+
+
+class ParentModel(BaseModel):
+    name: str
+    children: Optional[List[ChildModel]] = []
+
+    class Config:
+        orm_mode = True
+```
+
+#### n. Create Database Models
+
+- Putting all DB models in the same file, otherwise my app fails (should be fixable, don't know how)
+- Notice that the business and DB models are NOT tied up here. That happens in the DAO
+
+```python
+from typing import List
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+# IMPORTANT: Notice how we link these to the declarative_base (Base). This orchestrates our relational DB
+from api.database.database import Base
+
+
+class ParentTableRow(Base):
+    __tablename__ = "tblNameGoesHere"
+    # __table_args__ = {"schema": "coverletter"} # Used only for SQL Server
+
+    """
+    SQLAlchemy ORM (Object Relational Model) representation of the table
+    """
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    # relationship() can be backtraced, but keeping it simple for this example
+    skills: Mapped[List["ChildTableRow"]] = relationship()
+
+
+class ChildTableRow(Base):
+    __tablename__ = "tblNameGoesHere"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    # Notice 2 things:
+    # 1. I am assigning a column name here, otherwise it defaults to the same name as in Python
+    # 2. I am explicitly stating the ForeignKey
+    user_id: Mapped[int] = mapped_column("userId", ForeignKey("tblUser.id"))
+```
+
+#### n. Create DAO(s)
+
+- You can have one or multiple DAO's, for the sake of simplicity we'll have one for this project
+- Here's where you link the business and the DB models
+
+```python
+from sqlalchemy.orm import Session
+from api.database.table_models.table_row_models import ParentTableRow, ChildTableRow
+from api.models.user_model import ParentModel
+
+
+class Dao:
+    @staticmethod
+    def create_something(session: Session, parent_model: ParentModel) -> ParentTableRow:
+        # Create the row model from the business model (passed down from the endpoint)
+        child_rows = []
+        for child in parent_model.children:
+            child_row = ChildTableRow(name=child.name)
+            child_rows.append(child_row)
+
+        parent_row = ParentTableRow(name=parent_model.name, children=child_rows)
+        session.add(parent_row)
+        session.commit()
+
+        # I presume I would be updating the data (mostly the PK) from the DB
+        session.refresh(parent_row)
+        return parent_row
+```
+
 #### n. Create an endpoints file
 
 ```python
@@ -654,7 +753,58 @@ Feature: AddUsers
 2. Now update the `steps.py`
 
 ```python
-## TBD
+import json
+from behave import when, then
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from api.database.database import Base
+from api.endpoints import app, get_session
+
+# This allows us to test our endpoint without deploying the API
+test_client = TestClient(app)
+
+# The following steps recreate our DB in a mock
+engine = create_engine("sqlite:///./test.db", connect_args={"check_same_thread": False})
+Base.metadata.drop_all(engine)
+Base.metadata.create_all(engine)
+TestSessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+
+
+# These overrides are where the magic to avoid using our actual DB happens
+def override_get_session() -> TestSessionLocal:
+    session = TestSessionLocal()
+    yield session
+    session.rollback()
+    session.close()
+
+
+app.dependency_overrides[get_session] = override_get_session
+
+
+@when('The following is posted to the "{endpoint_name}" endpoint using PUT')
+def step_impl(context, endpoint_name):
+    try:
+        # context.text is where the framework puts the text under the When/Then/Given etc 
+        response = test_client.put(url=f"/{endpoint_name}", json=json.loads(context.text))
+        if response.status_code == 200:
+            # We can add whatever to the context, which will allow us to test
+            context.response = response
+            context.success = True
+        else:
+            context.success = False
+    except Exception as ex:
+        print(f"Something horrible happened!!: {str(ex)}")
+        context.success = False
+
+
+@then("response should be")
+def step_impl(context):
+    assert context.success is True
+    response_dict = json.loads(context.response.text)
+    expected = json.loads(context.text)
+    assert response_dict == expected
 ```
 
 </details> <!-- Basic (Blank) set up -->

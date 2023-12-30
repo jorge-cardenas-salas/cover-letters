@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy "local" files to the container (in the `/app` folder)
 COPY ./api/ ./api/
+# We ONLY need to copy the tests if we will be settting up a Docker service for testing
 COPY ./tests/ ./tests/
 COPY ./requirements.txt .
 

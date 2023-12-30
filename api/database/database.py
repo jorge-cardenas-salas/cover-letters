@@ -42,5 +42,4 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Now we will use the function declarative_base() that returns a class.
 # Later we will inherit from this class to create each of the database models or classes (the ORM models)
-# TODO: This seems like something that should be imported directly from the models ?
 Base = declarative_base()
