@@ -28,6 +28,9 @@ This file is just to add notes and background about the technologies used in thi
         * [2. Create the docker-compose.yaml](#2-create-the-docker-composeyaml)
         * [3. Start up the container](#3-start-up-the-container)
 * [Testing](#testing)
+* [Logging](#logging)
+    * [Important: Use a custom logger class](#important-use-a-custom-logger-class)
+* [Data load](#data-load)
 * [General: What to set up for blank project](#general-what-to-set-up-for-blank-project)
     * [How to prepare ahead of the Intuit interview?](#how-to-prepare-ahead-of-the-intuit-interview)
     * [Basic (blank) set up](#basic-blank-set-up)
@@ -42,7 +45,9 @@ This file is just to add notes and background about the technologies used in thi
         * [n. Checkpoint: Make sure you are doing good](#n-checkpoint-make-sure-you-are-doing-good)
         * [n. Testing framework](#n-testing-framework)
             * [Integration tests](#integration-tests)
-    * [Now for the specific project](#now-for-the-specific-project)
+        * [n. Logging](#n-logging)
+        * [n. Data load](#n-data-load)
+* [Now for the specific project](#now-for-the-specific-project)
     * [2. Create new project in PyCharm](#2-create-new-project-in-pycharm)
     * [3. Basic set up in PyCharm](#3-basic-set-up-in-pycharm)
         * [3.n. Create models](#3n-create-models)
@@ -64,7 +69,7 @@ This file is just to add notes and background about the technologies used in thi
     - [x] Feature tests (Cucumber / Gherkin)
 - [x] Enrich add users endpoint to
   optionally [include skills](https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3)
-- [ ] Add logging
+- [x] Add logging
 - [ ] Feature: load data from:
     - [ ] A file
     - [ ] Others? (TBD)
@@ -526,7 +531,13 @@ app = FastAPI()
 logger = DefaultLogger().get_logger()
 ```
 
-</details>
+</details> <!-- Testing -->
+
+## Data load
+
+<details>
+
+</details> <!-- Data load -->
 
 ## General: What to set up for blank project
 
@@ -924,9 +935,59 @@ def step_impl(context):
     assert response_dict == expected
 ```
 
+#### n. Logging
+
+- Create a custom `Logger` in the `common` folder, cleaner than just using `logging`
+- Implement an actual class, using a method to get the logger doesn't seem to work properly on FastAPI
+
+Basic Logger:
+
+```python
+import sys
+from logging import Logger
+from typing import Optional
+
+from common.constants import DEFAULT_LOG_FORMAT, PROJECT_NAME
+
+
+class DefaultLogger:
+    """
+    Having a class is a bit convoluted, but necessary since logging kept failing when I initialized
+    the log from endpoints.py without a wrapper class. My theory is that this happened because I needed to add state
+    """
+
+    def __init__(
+            self,
+            logger_name: Optional[str] = PROJECT_NAME,
+            use_file: Optional[bool] = False,
+            filename: Optional[str] = ""
+    ):
+        self.logger = logging.getLogger(logger_name)
+        self.logger.setLevel(logging.DEBUG)
+        formatter = logging.Formatter(DEFAULT_LOG_FORMAT)
+
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(formatter)
+
+        self.logger.addHandler(console_handler)
+        if use_file:
+            log_filename = f"{filename if filename else 'default'}.log"
+            file_handler = logging.FileHandler(f"{log_filename}")
+            file_handler.setFormatter(formatter)
+            file_handler.setLevel(logging.DEBUG)
+            self.logger.addHandler(file_handler)
+
+    def get_logger(self) -> Logger:
+        return self.logger
+```
+
+#### n. Data load
+
+TBD
+
 </details> <!-- Basic (Blank) set up -->
 
-### Now for the specific project
+## Now for the specific project
 
 <details>
 
