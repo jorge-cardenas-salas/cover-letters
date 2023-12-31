@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from api.database.daos.dao import Dao
 from api.database.database import SessionLocal
-from api.models.user_model import UserModel
+from common.models.user_model import UserModel
 from common.utilities import DefaultLogger
 
 app = FastAPI()

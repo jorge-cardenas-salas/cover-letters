@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
 from api.database.table_models.table_row_models import UserTableRow, SkillTableRow
-from api.models.user_model import UserModel
-
+from common.models.user_model import UserModel
+from typing import List
 
 class Dao:
     @staticmethod
@@ -23,3 +23,10 @@ class Dao:
         # I presume I would be updating the data (mostly the PK) from the DB
         session.refresh(user_row)
         return user_row
+
+    def merge_users(session: Session, user_models: List[UserModel]):
+        pass
+        # with session.connection() as conn:
+        #     conn.execute("-- MERGE statement goes here")
+        #
+        # return session.commit()
