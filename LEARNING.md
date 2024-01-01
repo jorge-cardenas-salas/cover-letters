@@ -832,7 +832,7 @@ from typing import List
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 # IMPORTANT: Notice how we link these to the declarative_base (Base). This orchestrates our relational DB
-from api.database.database import Base
+from common.database.database import Base
 
 
 class ParentTableRow(Base):
@@ -866,7 +866,7 @@ class ChildTableRow(Base):
 
 ```python
 from sqlalchemy.orm import Session
-from api.database.table_models.table_row_models import ParentTableRow, ChildTableRow
+from common.database.table_models.table_row_models import ParentTableRow, ChildTableRow
 from common.models.user_model import ParentModel
 
 
@@ -893,10 +893,10 @@ class Dao:
 ```python
 from fastapi import FastAPI, Depends
 
-from api.database.database import SessionLocal
+from common.database.database import SessionLocal
 from sqlalchemy.orm import Session
 from common.models.user_model import UserModel
-from api.database.daos.dao import Dao
+from common.database import Dao
 
 app = FastAPI()
 
@@ -974,7 +974,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from api.database.database import Base
+from common.database.database import Base
 from api.endpoints import app, get_session
 
 # This allows us to test our endpoint without deploying the API

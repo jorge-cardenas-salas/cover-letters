@@ -8,7 +8,7 @@ from pydantic import ValidationError
 from common.constants import FailMode
 from common.models.user_model import UserModel
 from common.utilities import DefaultLogger
-from api.database.daos.dao import Dao
+from common.database.daos.dao import Dao
 
 
 class CsvParser:

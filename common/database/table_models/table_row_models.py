@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from api.database.database import Base
+from common.database.database import Base
 
 
 class UserTableRow(Base):

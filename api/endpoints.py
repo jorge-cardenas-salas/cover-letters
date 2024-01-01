@@ -1,8 +1,10 @@
+from typing import List
+
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
-from api.database.daos.dao import Dao
-from api.database.database import SessionLocal
+from common.database.daos.dao import Dao
+from common.database.database import SessionLocal
 from common.models.user_model import UserModel
 from common.utilities import DefaultLogger
 
@@ -37,19 +39,20 @@ def get_session() -> SessionLocal:
 
 
 @app.put("/add-users")
-def add_users(model: UserModel, session: Session = Depends(get_session)):
+def add_users(models: List[UserModel], session: Session = Depends(get_session)):
     """
-    Create the new user in the Database
+    Create new users in the Database
 
     Args:
-        model (UserModel): The user data to be added
+        models (UserModel): The user data to be added
         session (Session): The DB session to be used to store the data
     """
     # logger = get_local_logger()
     logger.info("Adding new user")
     try:
-        new_user = Dao.create_user(session=session, user_model=model)
-        logger.info(f"New user created, id: {new_user.id}")
-        return new_user
+        new_users = Dao.merge_users(session=session, user_models=models)
+        new_ids = [user.id for user in new_users]
+        logger.info(f"New users created, id's: {new_ids}")
+        return new_ids
     except Exception as ex:
         logger.exception(str(ex))

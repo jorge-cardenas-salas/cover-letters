@@ -13,16 +13,16 @@ class UserModel(BaseModel):
     skills: Optional[List[SkillModel]] = []
     phone: str
 
-    @classmethod
     @field_validator("phone")
+    @classmethod # this goes AFTER field_validator, regardless what PyCharm says >:-(
     def validate_phone(cls, value: str):
         pattern = "^(\\+\\d+)?(\\(\\d+\\))?\\s*[\\d-]+$"
         # Even though we use assert, this should throw a ValidationError
         assert re.match(pattern=pattern, string=value), "Phone doesn't match expected pattern"
         return value
 
-    @classmethod
     @field_validator("name")
+    @classmethod
     def validate_alphanums(cls, value: str) -> str:
         pattern = "^[a-zA-Z\\s]+"
         assert re.match(pattern=pattern, string=value), "Phone doesn't match expected pattern"

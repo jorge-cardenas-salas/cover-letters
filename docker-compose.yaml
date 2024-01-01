@@ -13,7 +13,9 @@ services:
     command: [ "uvicorn", "api.endpoints:app", "--host=0.0.0.0", "--reload" , "--reload-include='*.py'" ]
     # The following should help us avoid rebuilding every time
     volumes:
-      - ./api/:/app/api
+      - ./api/:/app/api # should help us avoid rebuilding every time
+      - ./coverletter.db:/app/coverletter.db # Database should be outside the container
+      - ./default.log:/app/default.log # Logs should also be outside the logs
     # watch allows the app to auto-reload on code changes, very practical
     develop:
       watch:

@@ -1,10 +1,23 @@
+from typing import List
 from unittest import TestCase
+from unittest.mock import patch
 
+from common.database.daos.dao import Dao
+from common.database.table_models.table_row_models import UserTableRow
 from data_uploader.csv_parser import CsvParser
 
 
+def mock_dao_return_values() -> List[UserTableRow]:
+    usr1 = UserTableRow()
+    usr1.id = 1
+    usr2 = UserTableRow()
+    usr2.id = 2
+    return [usr1, usr2]
+
+
 class TestDataUpload(TestCase):
-    def test_basic_upload(self):
+    @patch.object(Dao, "merge_users", return_value=mock_dao_return_values())
+    def test_basic_upload(self, *args):
         parser = CsvParser()
         result = parser.upload("/app/tests/data/sampleUpload.csv")
         self.assertTrue(result)
