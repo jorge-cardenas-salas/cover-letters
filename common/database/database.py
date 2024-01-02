@@ -43,3 +43,27 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Now we will use the function declarative_base() that returns a class.
 # Later we will inherit from this class to create each of the database models or classes (the ORM models)
 Base = declarative_base()
+
+
+def get_session() -> SessionLocal:
+    """
+    We use the SessionLocal class to create a dependency. We need to have an independent database session/connection
+    (SessionLocal) per request, use the same session through all the request and then close it after the request
+    is finished.
+
+    And then a new session will be created for the next request.
+
+    For that, we will create a new dependency with yield. Our dependency will create a new SQLAlchemy SessionLocal
+    that will be used in a single request, and then close it once the request is finished.
+
+    Returns:
+        SessionLocal: A DB session to be used once
+    """
+    # fetch session
+    session = SessionLocal()
+    try:
+        # `yield` returns a generator for the session, aka an iterable that can only iterate once
+        # In this case it returns a new Session every time is called, but forgets the previous sessions immediately
+        yield session
+    finally:
+        session.close()

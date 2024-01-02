@@ -6,15 +6,16 @@ from typing import List, Optional, Tuple, Dict
 from pydantic import ValidationError
 
 from common.constants import FailMode
+from common.database.daos.dao import Dao
+from common.database.database import SessionLocal
 from common.models.user_model import UserModel
 from common.utilities import DefaultLogger
-from common.database.daos.dao import Dao
 
 
 class CsvParser:
     EXPECTED_HEADERS = {"email", "name", "phone", "skillLevel", "skillName"}
 
-    def __init__(self, logger: Optional[Logger] = None, fail_mode: FailMode = FailMode.BATCH, dao:Dao = None):
+    def __init__(self, logger: Optional[Logger] = None, fail_mode: FailMode = FailMode.BATCH):
         # self.users: List[UserModel] = []
         # We'll use this to consolidate incoming data before parsing
         self.raw_data: Dict[str, dict] = {}
@@ -22,7 +23,6 @@ class CsvParser:
         self.logger: Logger = logger or DefaultLogger().get_logger()
         self.fail_mode: FailMode = fail_mode
         self.success = True
-        self.dao = dao or Dao()
 
     def upload(self, filename: str) -> bool:
         """
@@ -52,10 +52,16 @@ class CsvParser:
 
             models = self.create_models()
 
-            self.dao.merge_users(models)
+            # Remember parentheses here !
+            with SessionLocal() as session:
+                # You REALLY need to import this one, importing get_session() just doesn't fly here...
+                try:
+                    Dao.merge_users(session, user_models=models)
+                finally:
+                    session.close()
 
         except Exception as ex:
-            self.logger.error(str(ex))
+            self.logger.exception(str(ex))
             self.success = False
 
         return self.success
@@ -118,4 +124,3 @@ class CsvParser:
         self.raw_data[email] = user
 
         return True, ""
-

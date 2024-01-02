@@ -14,7 +14,7 @@ class UserModel(BaseModel):
     phone: str
 
     @field_validator("phone")
-    @classmethod # this goes AFTER field_validator, regardless what PyCharm says >:-(
+    @classmethod  # this goes AFTER field_validator, regardless what PyCharm says >:-(
     def validate_phone(cls, value: str):
         pattern = "^(\\+\\d+)?(\\(\\d+\\))?\\s*[\\d-]+$"
         # Even though we use assert, this should throw a ValidationError
