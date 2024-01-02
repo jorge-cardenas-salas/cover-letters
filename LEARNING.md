@@ -4,49 +4,55 @@ This file is just to add notes and background about the technologies used in thi
 
 <!-- TOC -->
 
-* [Project Roadmap](#project-roadmap)
-* [To learn](#to-learn)
-* [FastAPI](#fastapi)
-* [SQLAlchemy](#sqlalchemy)
-* [API/HTTP Request Methods](#apihttp-request-methods)
-    * [HTTP POST request](#http-post-request)
-    * [HTTP GET request](#http-get-request)
-    * [HTTP PUT request](#http-put-request)
-    * [HTTP HEAD request](#http-head-request)
-    * [HTTP PATCH request](#http-patch-request)
-    * [HTTP DELETE request](#http-delete-request)
-* [YAML](#yaml)
-    * [What it tries to solve](#what-it-tries-to-solve)
-    * [Rules](#rules)
-* [Docker](#docker)
-    * [Concepts](#concepts)
-    * [Dockerfile vs. docker-compose](#dockerfile-vs-docker-compose)
-        * [Dockerfile](#dockerfile)
-        * [docker-compose](#docker-compose)
-    * [For my app](#for-my-app)
-        * [1. Create a Dockerfile](#1-create-a-dockerfile)
-        * [2. Create the docker-compose.yaml](#2-create-the-docker-composeyaml)
-        * [3. Start up the container](#3-start-up-the-container)
-* [Testing](#testing)
-* [General: What to set up for blank project](#general-what-to-set-up-for-blank-project)
-    * [How to prepare ahead of the Intuit interview?](#how-to-prepare-ahead-of-the-intuit-interview)
-    * [Basic (blank) set up](#basic-blank-set-up)
-        * [n. Make sure the DB is up and running](#n-make-sure-the-db-is-up-and-running)
-        * [n. Create basic folder structure](#n-create-basic-folder-structure)
-        * [n. Add requirements](#n-add-requirements)
-        * [n. Set up minimum Docker config](#n-set-up-minimum-docker-config)
-        * [n. Create Models](#n-create-models)
-        * [n. Create Database Models](#n-create-database-models)
-        * [n. Create DAO(s)](#n-create-daos)
-        * [n. Create an endpoints file](#n-create-an-endpoints-file)
-        * [n. Checkpoint: Make sure you are doing good](#n-checkpoint-make-sure-you-are-doing-good)
-        * [n. Testing framework](#n-testing-framework)
-            * [Integration tests](#integration-tests)
+* [Learning Notes](#learning-notes)
+    * [Project Roadmap](#project-roadmap)
+    * [To learn](#to-learn)
+    * [FastAPI](#fastapi)
+    * [SQLAlchemy](#sqlalchemy)
+    * [API/HTTP Request Methods](#apihttp-request-methods)
+        * [HTTP POST request](#http-post-request)
+        * [HTTP GET request](#http-get-request)
+        * [HTTP PUT request](#http-put-request)
+        * [HTTP HEAD request](#http-head-request)
+        * [HTTP PATCH request](#http-patch-request)
+        * [HTTP DELETE request](#http-delete-request)
+    * [YAML](#yaml)
+        * [What it tries to solve](#what-it-tries-to-solve)
+        * [Rules](#rules)
+    * [Docker](#docker)
+        * [Concepts](#concepts)
+        * [Dockerfile vs. docker-compose](#dockerfile-vs-docker-compose)
+            * [Dockerfile](#dockerfile)
+            * [docker-compose](#docker-compose)
+        * [For my app](#for-my-app)
+            * [1. Create a Dockerfile](#1-create-a-dockerfile)
+            * [2. Create the docker-compose.yaml](#2-create-the-docker-composeyaml)
+            * [3. Start up the container](#3-start-up-the-container)
+    * [Testing](#testing)
+    * [Logging](#logging)
+        * [Important: Use a custom logger class](#important-use-a-custom-logger-class)
+    * [Data load](#data-load)
+    * [General: What to set up for blank project](#general-what-to-set-up-for-blank-project)
+        * [How to prepare ahead of the Intuit interview?](#how-to-prepare-ahead-of-the-intuit-interview)
+        * [Basic (blank) set up](#basic-blank-set-up)
+            * [n. Make sure the DB is up and running](#n-make-sure-the-db-is-up-and-running)
+            * [n. Create basic folder structure](#n-create-basic-folder-structure)
+            * [n. Add requirements](#n-add-requirements)
+            * [n. Set up minimum Docker config](#n-set-up-minimum-docker-config)
+            * [n. Create Models](#n-create-models)
+            * [n. Create Database Models](#n-create-database-models)
+            * [n. Create DAO(s)](#n-create-daos)
+            * [n. Create an endpoints file](#n-create-an-endpoints-file)
+            * [n. Checkpoint: Make sure you are doing good](#n-checkpoint-make-sure-you-are-doing-good)
+            * [n. Testing framework](#n-testing-framework)
+                * [Integration tests](#integration-tests)
+            * [n. Logging](#n-logging)
+            * [n. Data load](#n-data-load)
     * [Now for the specific project](#now-for-the-specific-project)
-    * [2. Create new project in PyCharm](#2-create-new-project-in-pycharm)
-    * [3. Basic set up in PyCharm](#3-basic-set-up-in-pycharm)
-        * [3.n. Create models](#3n-create-models)
-        * [3.n. Database](#3n-database)
+        * [2. Create new project in PyCharm](#2-create-new-project-in-pycharm)
+        * [3. Basic set up in PyCharm](#3-basic-set-up-in-pycharm)
+            * [3.n. Create models](#3n-create-models)
+            * [3.n. Database](#3n-database)
 
 <!-- TOC -->
 
@@ -64,9 +70,11 @@ This file is just to add notes and background about the technologies used in thi
     - [x] Feature tests (Cucumber / Gherkin)
 - [x] Enrich add users endpoint to
   optionally [include skills](https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3)
-- [ ] Add logging
-- [ ] Feature: load data from:
-    - [ ] A file
+- [x] Add logging
+- [ ] Feature: load data from
+    - [ ] A CSV file
+        - [ ] Class to read CSV's
+        - [ ] Optional/TBD: Automated uploader
     - [ ] Others? (TBD)
 - [ ] Feature: upload files (Cover letters/Resumes)
 - [ ] Feature: Create stuff from templates (TBD, the Consumer might a better place for it)
@@ -415,7 +423,21 @@ docker-compose up api
         8. And now we are ready to implement our tests: `response = client.get("/endpointName/")`
 - Pro-tip: You can do ste-by-step debugging by using PyCharm's integrated FastAPI Run/Debug configuration
 
-</details>
+No more mocking the logger, check this out this beauty of code to check the logs!:
+
+```python
+class TestDataUpload(TestCase):
+    def test_partially_correct_data(self):
+        with self.assertLogs() as check_log:
+            parser = CsvParser()
+            result = parser.upload("/app/tests/data/partiallyCorrectUpload.csv")
+            self.assertFalse(result)
+            log_text = str(check_log.output)
+            self.assertIn("Error in Row 1: missing email", log_text)
+            self.assertIn("Error in Row 3: skill level must be numeric", log_text)
+```
+
+</details> <!-- Testing -->
 
 ## Logging
 
@@ -526,7 +548,83 @@ app = FastAPI()
 logger = DefaultLogger().get_logger()
 ```
 
-</details>
+</details> <!-- Logging -->
+
+## Data load
+
+<details>
+
+- CSV: There are 2 main data loaders for Python
+    - Pandas
+        - Data manipulation and analysis
+        - It is cool to slice and dice data
+        - "offers data structures and operations for manipulating numerical tables and time series"
+        - Pros
+            - Good for complex analysis and mathematical stuff
+        - Cons
+            - It is a heavy framework
+            - Puts the whole data in memory
+    - CSV (just like that: `import csv`)
+        - It has CSV-specific functionality (duh!)
+        - Better if you have simple needs
+        - Pros
+            - Much lighter than pandas
+        - Cons
+            - Not good if you need more complex functionality
+- CSV module (ditching pandas for the time being)
+    - no need for `pip install`
+
+### Validations:
+
+- Leverage pydantic, it has a cool array of validation functions, check the following code
+- NOTE: there is a deprecated `from pydantic import validator`, be careful to use `field_validator`
+- IMPORTANT: seems like some pydantic validators require their own package: `pip install pydantic[email]`
+
+```python
+import re
+from pydantic import BaseModel, EmailStr, field_validator
+
+
+class UserModel(BaseModel):
+    email: EmailStr  # Built-in validation
+    phone: str
+    name: str
+    title: str
+
+    @classmethod
+    @field_validator("phone")
+    def validate_phone(cls, value: str):  # Custom validation
+        pattern = "^(\\+\\d+)?(\\(\\d+\\))?\\s*[\\d-]+$"
+        # Even though we use assert, this should throw a ValidationError
+        assert re.match(pattern=pattern, string=value), "Phone doesn't match expected pattern"
+        return value
+
+    @classmethod
+    @field_validator("name", "title")  # <== Check this, you can add validations for multiple fields
+    def validate_alphanums(cls, value: str) -> str:
+        pattern = "^[a-zA-Z\\s]+"
+        # Even though we use assert, this should throw a ValidationError
+        assert re.match(pattern=pattern, string=value), "Phone doesn't match expected pattern"
+        return value
+```
+
+### DELETEME : What will my data-upload feature will be:
+
+- [ ] A CSV file
+    - [ ] Class to read CSV's
+        - CSV will include both user and skills data
+        - Validate the data
+        - File can be failed on a batch or record level
+        - A second file with incorrect data shall be generated
+        - Redundant data shall be discarded with a warning
+    - [ ] Optional/TBD: Automated reader
+        - Use a job-like logic to parse new files
+        - Decide: should I use cron-like triggers, or are there better choices?
+        - A new file has the `.csv` extension
+        - It can have the same name, but an updated timestamp
+- [ ] Others? (TBD)
+
+</details> <!-- Data load -->
 
 ## General: What to set up for blank project
 
@@ -734,7 +832,7 @@ from typing import List
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 # IMPORTANT: Notice how we link these to the declarative_base (Base). This orchestrates our relational DB
-from api.database.database import Base
+from common.database.database import Base
 
 
 class ParentTableRow(Base):
@@ -768,8 +866,8 @@ class ChildTableRow(Base):
 
 ```python
 from sqlalchemy.orm import Session
-from api.database.table_models.table_row_models import ParentTableRow, ChildTableRow
-from api.models.user_model import ParentModel
+from common.database.table_models.table_row_models import ParentTableRow, ChildTableRow
+from common.models.user_model import ParentModel
 
 
 class Dao:
@@ -795,10 +893,10 @@ class Dao:
 ```python
 from fastapi import FastAPI, Depends
 
-from api.database.database import SessionLocal
+from common.database.database import SessionLocal
 from sqlalchemy.orm import Session
-from api.models.user_model import UserModel
-from api.database.daos.dao import Dao
+from common.models.user_model import UserModel
+from common.database import Dao
 
 app = FastAPI()
 
@@ -876,7 +974,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from api.database.database import Base
+from common.database.database import Base
 from api.endpoints import app, get_session
 
 # This allows us to test our endpoint without deploying the API
@@ -924,9 +1022,59 @@ def step_impl(context):
     assert response_dict == expected
 ```
 
+#### n. Logging
+
+- Create a custom `Logger` in the `common` folder, cleaner than just using `logging`
+- Implement an actual class, using a method to get the logger doesn't seem to work properly on FastAPI
+
+Basic Logger:
+
+```python
+import sys
+from logging import Logger
+from typing import Optional
+
+from common.constants import DEFAULT_LOG_FORMAT, PROJECT_NAME
+
+
+class DefaultLogger:
+    """
+    Having a class is a bit convoluted, but necessary since logging kept failing when I initialized
+    the log from endpoints.py without a wrapper class. My theory is that this happened because I needed to add state
+    """
+
+    def __init__(
+            self,
+            logger_name: Optional[str] = PROJECT_NAME,
+            use_file: Optional[bool] = False,
+            filename: Optional[str] = ""
+    ):
+        self.logger = logging.getLogger(logger_name)
+        self.logger.setLevel(logging.DEBUG)
+        formatter = logging.Formatter(DEFAULT_LOG_FORMAT)
+
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(formatter)
+
+        self.logger.addHandler(console_handler)
+        if use_file:
+            log_filename = f"{filename if filename else 'default'}.log"
+            file_handler = logging.FileHandler(f"{log_filename}")
+            file_handler.setFormatter(formatter)
+            file_handler.setLevel(logging.DEBUG)
+            self.logger.addHandler(file_handler)
+
+    def get_logger(self) -> Logger:
+        return self.logger
+```
+
+#### n. Data load
+
+TBD
+
 </details> <!-- Basic (Blank) set up -->
 
-### Now for the specific project
+## Now for the specific project
 
 <details>
 

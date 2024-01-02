@@ -9,7 +9,7 @@ COPY ./api/ ./api/
 # We ONLY need to copy the tests if we will be settting up a Docker service for testing
 COPY ./tests/ ./tests/
 COPY ./common/ ./common/
-COPY ./coverletter.db ./
+COPY ./data_uploader/ ./data_uploader/
 COPY ./requirements.txt .
 
 # Install requirements in the container

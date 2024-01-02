@@ -8,6 +8,11 @@ class ExpertiseLevel(Enum):
     EXPERT = 3
 
 
+class FailMode(Enum):
+    BATCH = 0
+    ROW = 1
+
+
 PROJECT_NAME = "cover-letter-api"
 
 DEFAULT_LOG_FORMAT = "%(name)s | %(asctime)s | %(levelname)s | %(module)s.%(processName)s: %(message)s"
