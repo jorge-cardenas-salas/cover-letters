@@ -31,7 +31,8 @@ class TestDataUpload(TestCase):
             self.assertIn("Error in Row 1: missing email", log_text)
             self.assertIn("Error in Row 3: skill level must be numeric", log_text)
 
-    def test_invalid_format_data(self):
+    @patch.object(Dao, "merge_users", return_value=mock_dao_return_values())
+    def test_invalid_format_data(self, *args):
         with self.assertLogs() as check_log:
             parser = CsvParser()
             result = parser.upload("/app/tests/data/invalidFormatsUpload.csv")
