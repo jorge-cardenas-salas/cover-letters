@@ -1,5 +1,6 @@
 from typing import List
 
+import sqlalchemy
 from sqlalchemy.orm import Session
 
 from common.database.table_models.table_row_models import UserTableRow, SkillTableRow
@@ -30,3 +31,46 @@ class Dao:
             output.append(user_row)
 
         return output
+
+    @staticmethod
+    def select_users(session: Session, ids: List[int]):
+        if not ids:
+            raise ValueError("At least an id is necessary")
+
+        users = session.query(
+            UserTableRow.id, UserTableRow.name  # , UserTableRow.skills
+        ).filter(UserTableRow.id.in_(ids)).distinct()
+        output = [{user.id, user.name} for user in users]
+
+        return output
+
+    @staticmethod
+    def delete_users(session: Session, ids: List[int]):
+        if not ids:
+            raise ValueError("At least an id is necessary")
+
+        users = session.query(
+            UserTableRow
+        ).filter(UserTableRow.id.in_(ids))
+        try:
+            for user in users:
+                session.delete(user)
+        except Exception as ex:
+            session.rollback()
+            raise ex
+
+        session.commit()
+
+    @staticmethod
+    def update_user(user_id: int, user_model: UserModel, session: Session):
+        try:
+            session.execute(
+                sqlalchemy.update(UserTableRow)
+                .where(UserTableRow.id == user_id)
+                .values(name=user_model.name)
+            )
+        except Exception as ex:
+            session.rollback()
+            raise ex
+
+        session.commit()
