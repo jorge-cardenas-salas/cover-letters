@@ -1,58 +1,44 @@
-# Learning Notes
+## Table of Contents
 
 This file is just to add notes and background about the technologies used in this repo
 
 <!-- TOC -->
 
-* [Learning Notes](#learning-notes)
-    * [Project Roadmap](#project-roadmap)
-    * [To learn](#to-learn)
-    * [FastAPI](#fastapi)
-    * [SQLAlchemy](#sqlalchemy)
-    * [API/HTTP Request Methods](#apihttp-request-methods)
-        * [HTTP POST request](#http-post-request)
-        * [HTTP GET request](#http-get-request)
-        * [HTTP PUT request](#http-put-request)
-        * [HTTP HEAD request](#http-head-request)
-        * [HTTP PATCH request](#http-patch-request)
-        * [HTTP DELETE request](#http-delete-request)
-    * [YAML](#yaml)
-        * [What it tries to solve](#what-it-tries-to-solve)
-        * [Rules](#rules)
-    * [Docker](#docker)
-        * [Concepts](#concepts)
-        * [Dockerfile vs. docker-compose](#dockerfile-vs-docker-compose)
-            * [Dockerfile](#dockerfile)
-            * [docker-compose](#docker-compose)
-        * [For my app](#for-my-app)
-            * [1. Create a Dockerfile](#1-create-a-dockerfile)
-            * [2. Create the docker-compose.yaml](#2-create-the-docker-composeyaml)
-            * [3. Start up the container](#3-start-up-the-container)
-    * [Testing](#testing)
-    * [Logging](#logging)
-        * [Important: Use a custom logger class](#important-use-a-custom-logger-class)
-    * [Data load](#data-load)
-    * [General: What to set up for blank project](#general-what-to-set-up-for-blank-project)
-        * [How to prepare ahead of the Intuit interview?](#how-to-prepare-ahead-of-the-intuit-interview)
-        * [Basic (blank) set up](#basic-blank-set-up)
-            * [n. Make sure the DB is up and running](#n-make-sure-the-db-is-up-and-running)
-            * [n. Create basic folder structure](#n-create-basic-folder-structure)
-            * [n. Add requirements](#n-add-requirements)
-            * [n. Set up minimum Docker config](#n-set-up-minimum-docker-config)
-            * [n. Create Models](#n-create-models)
-            * [n. Create Database Models](#n-create-database-models)
-            * [n. Create DAO(s)](#n-create-daos)
-            * [n. Create an endpoints file](#n-create-an-endpoints-file)
-            * [n. Checkpoint: Make sure you are doing good](#n-checkpoint-make-sure-you-are-doing-good)
-            * [n. Testing framework](#n-testing-framework)
-                * [Integration tests](#integration-tests)
-            * [n. Logging](#n-logging)
-            * [n. Data load](#n-data-load)
-    * [Now for the specific project](#now-for-the-specific-project)
-        * [2. Create new project in PyCharm](#2-create-new-project-in-pycharm)
-        * [3. Basic set up in PyCharm](#3-basic-set-up-in-pycharm)
-            * [3.n. Create models](#3n-create-models)
-            * [3.n. Database](#3n-database)
+* [Table of Contents](#table-of-contents)
+* [Project Roadmap](#project-roadmap)
+* [To learn](#to-learn)
+* [FastAPI](#fastapi)
+* [SQLAlchemy](#sqlalchemy)
+* [API/HTTP Request Methods](#apihttp-request-methods)
+    * [HTTP POST request](#http-post-request)
+    * [HTTP GET request](#http-get-request)
+    * [HTTP PUT request](#http-put-request)
+    * [HTTP HEAD request](#http-head-request)
+    * [HTTP PATCH request](#http-patch-request)
+    * [HTTP DELETE request](#http-delete-request)
+* [YAML](#yaml)
+    * [What it tries to solve](#what-it-tries-to-solve)
+    * [Rules](#rules)
+* [Docker](#docker)
+    * [Concepts](#concepts)
+    * [Dockerfile vs. docker-compose](#dockerfile-vs-docker-compose)
+        * [Dockerfile](#dockerfile)
+        * [docker-compose](#docker-compose)
+    * [For my app](#for-my-app)
+        * [1. Create a Dockerfile](#1-create-a-dockerfile)
+        * [2. Create the docker-compose.yaml](#2-create-the-docker-composeyaml)
+        * [3. Start up the container](#3-start-up-the-container)
+* [Testing](#testing)
+* [Logging](#logging)
+    * [Important: Use a custom logger class](#important-use-a-custom-logger-class)
+* [Data load](#data-load)
+    * [Validations:](#validations)
+* [General: What to set up for blank project](#general-what-to-set-up-for-blank-project)
+* [Now for the specific project](#now-for-the-specific-project)
+    * [2. Create new project in PyCharm](#2-create-new-project-in-pycharm)
+    * [3. Basic set up in PyCharm](#3-basic-set-up-in-pycharm)
+        * [3.n. Create models](#3n-create-models)
+        * [3.n. Database](#3n-database)
 
 <!-- TOC -->
 
@@ -71,7 +57,7 @@ This file is just to add notes and background about the technologies used in thi
 - [x] Enrich add users endpoint to
   optionally [include skills](https://fastapi.tiangolo.com/tutorial/sql-databases/#__tabbed_1_3)
 - [x] Add logging
-- [ ] Feature: load data from
+- [x] Feature: load data from
     - [ ] A CSV file
         - [ ] Class to read CSV's
         - [ ] Optional/TBD: Automated uploader
@@ -608,31 +594,27 @@ class UserModel(BaseModel):
         return value
 ```
 
-### DELETEME : What will my data-upload feature will be:
-
-- [ ] A CSV file
-    - [ ] Class to read CSV's
-        - CSV will include both user and skills data
-        - Validate the data
-        - File can be failed on a batch or record level
-        - A second file with incorrect data shall be generated
-        - Redundant data shall be discarded with a warning
-    - [ ] Optional/TBD: Automated reader
-        - Use a job-like logic to parse new files
-        - Decide: should I use cron-like triggers, or are there better choices?
-        - A new file has the `.csv` extension
-        - It can have the same name, but an updated timestamp
-- [ ] Others? (TBD)
-
 </details> <!-- Data load -->
 
 ## General: What to set up for blank project
 
-<details open>
+<details>
+<summary>Expand for details</summary>
 
-### How to prepare ahead of the Intuit interview?
+<details>
+<summary>Preparation Checklist</summary>
 
-- [ ] Determine the minimum viable product "frame"
+- [ ] Create a new repo from [template](https://github.com/jorge-cardenas-salas/template) ahead of time
+    - [Instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)
+- [ ] Configure PyCharm
+    - Set interpreter
+    - Set FastAPI Debug config
+    - Set unit test run config
+    - Set feature test run config
+    - Make sure the project works from the command line
+- [x] See if all of the above can
+  be [saved to github](https://www.jetbrains.com/help/pycharm/sharing-project-settings.html)
+- [x] Determine the minimum viable product "frame"
     - Database connection
     - API
     - Unit tests
@@ -645,11 +627,12 @@ class UserModel(BaseModel):
     - [ ] Ideally, ask community for peer review
 - [ ] Create slides for personal presentation and portfolio
 
-### Basic (blank) set up
+</details> <!-- Preparation Checklist -->
 
-<details> 
+<details>
+<summary>Basic (blank) set up</summary>
 
-#### n. Make sure the DB is up and running
+**_Make sure the DB is up and running_**
 
 **IMPORTANT**: Consider creating a script for it
 
@@ -657,34 +640,51 @@ class UserModel(BaseModel):
 2. Look for `MySQLServer`
 3. Hit `Start`
 
-#### n. Create basic folder structure
+</details> <!-- Database -->
+
+<details>
+<summary>Create basic folder structure</summary>
 
 **NOTE**: _italics_ mean folder, `code` means file
 
 - _api_
+    - `endpoints.py`
+- _common_
     - _database_
         - _daos_
             - `dao.py`
-        - _table_models_
+        - _row_models_
+            - `row_models.py`
         - `database.py`
     - _models_
-    - `endpoints.py`
-- _common_
     - `constants.py`
     - `utilities.py`
+- _data_upload_
+    - `csv_parser.py`
+    - `other_file_type_parser.py`
 - _tests_
     - _unit_
     - _feature_
         - _steps_
             - `steps.py`
-- _data_load_ (TBC)
-    - **What here?**
+- _data_upload_
+    - `csv_parser.py`
+    - `other_parser.py`
 - `Dockerfile`
 - `docker-compose.yaml`
 - `README.md`
 - `requirements.txt`
 
-#### n. Add requirements
+</details> <!-- Basic structure -->
+
+<details>
+<summary>Environment/Config</summary>
+
+- Update `.env` file
+
+</details>
+<details>
+<summary>Add requirements</summary>
 
 ```commandline
 pip freeze > requirements.txt
@@ -705,9 +705,53 @@ sqlserver
 pyodbc
 starlette.testclient
 httpx
+python-dotenv
 ```
 
-#### n. Set up minimum Docker config
+</details> <!-- Requirements -->
+
+<details>
+<summary>Utilities</summary>
+
+- Create a `DefaultLogger`
+
+```python
+class DefaultLogger:
+    """
+    Having a class is a bit convoluted, but necessary since logging kept failing when I initialized
+    the log from endpoints.py without a wrapper class. My theory is that this happened because I needed to add state
+    """
+
+    def __init__(
+            self,
+            logger_name: Optional[str] = PROJECT_NAME,
+            use_file: Optional[bool] = False,
+            filename: Optional[str] = ""
+    ):
+        self.logger = logging.getLogger(logger_name)
+        self.logger.setLevel(logging.DEBUG)
+        formatter = logging.Formatter(DEFAULT_LOG_FORMAT)
+
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(formatter)
+
+        self.logger.addHandler(console_handler)
+        if use_file:
+            log_filename = f"{filename if filename else 'default'}.log"
+            file_handler = logging.FileHandler(f"{log_filename}")
+            file_handler.setFormatter(formatter)
+            file_handler.setLevel(logging.DEBUG)
+            self.logger.addHandler(file_handler)
+
+    def get_logger(self) -> Logger:
+        return self.logger
+
+```
+
+</details> <!-- Utilities -->
+
+<details>
+<summary>Set up minimum Docker config</summary>
 
 `Dockerfile`:
 
@@ -794,7 +838,10 @@ services:
           path: requirements.txt
 ```
 
-#### n. Create Models
+</details> <!-- Docker -->
+
+<details>
+<summary>Create Business Models</summary>
 
 - This section refers to the **business** models, database models (rows) will be created in a bit
 - For simplicity both models are in the same file, they should be separate in the finalized version
@@ -822,10 +869,23 @@ class ParentModel(BaseModel):
         orm_mode = True
 ```
 
-#### n. Create Database Models
+</details> <!-- Business Models -->
 
-- Putting all DB models in the same file, otherwise my app fails (should be fixable, don't know how)
-- Notice that the business and DB models are NOT tied up here. That happens in the DAO
+<details>
+<summary>Create Database Models</summary>
+
+- Start by adding details to `database.py`
+  - connection string: 
+    - Try and use sqlite for simplicity if possible
+    - If MS SQL is needed remember to un-comment the necessary installs in `Dockerfile`
+  - Create `engine` from conn string
+  - Create `SessionLocal` from `engine` using `sessionmaker`. This is actually a session **_generator_**
+  - Create the SQLAlchemy `declarative_base`. This will link models together
+  - Use a `get_session` to actually create the data session
+- Secondly, create the DB models
+  - Putting all DB models in the same file, otherwise my app fails (should be fixable, don't know how)
+  - Notice that the business and DB models are NOT tied up here. That happens in the DAO
+- Lastly, create the DAO
 
 ```python
 from typing import List
@@ -859,7 +919,10 @@ class ChildTableRow(Base):
     user_id: Mapped[int] = mapped_column("userId", ForeignKey("tblUser.id"))
 ```
 
-#### n. Create DAO(s)
+</details> <!-- DB Models -->
+
+<details>
+<summary>Create DAO(s)</summary>
 
 - You can have one or multiple DAO's, for the sake of simplicity we'll have one for this project
 - Here's where you link the business and the DB models
@@ -888,7 +951,11 @@ class Dao:
         return parent_row
 ```
 
-#### n. Create an endpoints file
+</details> <!-- DAO -->
+
+
+<details>
+<summary>Create an endpoints file</summary>
 
 ```python
 from fastapi import FastAPI, Depends
@@ -920,7 +987,7 @@ def get_session() -> SessionLocal:
         session.close()
 ```
 
-#### n. Checkpoint: Make sure you are doing good
+**_Checkpoint: Make sure you are doing good_**
 
 1. Start up the service
 
@@ -934,7 +1001,11 @@ docker-compose up api
 http://localhost:8000/docs
 ```
 
-#### n. Testing framework
+</details> <!-- Endpoints -->
+
+
+<details>
+<summary>Testing framework</summary>
 
 Add requirements if you don't have them already:
 
@@ -946,7 +1017,7 @@ starlette.testclient
 httpx
 ```
 
-##### Integration tests
+**_Integration tests_**
 
 1. Let PyCharm do the deed for you. Just create a `.feature` file, example:
 
@@ -1022,57 +1093,22 @@ def step_impl(context):
     assert response_dict == expected
 ```
 
-#### n. Logging
-
-- Create a custom `Logger` in the `common` folder, cleaner than just using `logging`
-- Implement an actual class, using a method to get the logger doesn't seem to work properly on FastAPI
-
-Basic Logger:
-
-```python
-import sys
-from logging import Logger
-from typing import Optional
-
-from common.constants import DEFAULT_LOG_FORMAT, PROJECT_NAME
+</details> <!-- Testing -->
 
 
-class DefaultLogger:
-    """
-    Having a class is a bit convoluted, but necessary since logging kept failing when I initialized
-    the log from endpoints.py without a wrapper class. My theory is that this happened because I needed to add state
-    """
+<details>
+<summary>Data load</summary>
 
-    def __init__(
-            self,
-            logger_name: Optional[str] = PROJECT_NAME,
-            use_file: Optional[bool] = False,
-            filename: Optional[str] = ""
-    ):
-        self.logger = logging.getLogger(logger_name)
-        self.logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(DEFAULT_LOG_FORMAT)
+- Add the module to my image: `COPY ./data_uploader/ ./data_uploader/`
+- Leverage `pydantic` for your validations
+    - `from pydantic import EmailStr, field_validator`
+    - Use pre-built validations directly in the field declaration: `email: EmailStr`
+    - implement the field_validator decoration on top of validation
+      methods (`@field_validator("phone") ... def myvalidation()`)
 
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setFormatter(formatter)
+</details> <!-- Data load -->
 
-        self.logger.addHandler(console_handler)
-        if use_file:
-            log_filename = f"{filename if filename else 'default'}.log"
-            file_handler = logging.FileHandler(f"{log_filename}")
-            file_handler.setFormatter(formatter)
-            file_handler.setLevel(logging.DEBUG)
-            self.logger.addHandler(file_handler)
-
-    def get_logger(self) -> Logger:
-        return self.logger
-```
-
-#### n. Data load
-
-TBD
-
-</details> <!-- Basic (Blank) set up -->
+</details> <!-- General: What to set up for blank project -->
 
 ## Now for the specific project
 

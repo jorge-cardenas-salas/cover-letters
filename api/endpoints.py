@@ -44,3 +44,32 @@ def upload_file(filename: str):
         logger.exception(str(ex))
 
     return f"Success: {result}"
+
+
+@app.post("/retrieve-users")
+def retrieve_users(ids: List[int], session: Session = Depends(get_session)):
+    try:
+        output = Dao.select_users(ids=ids, session=session)
+        return output
+    except Exception as ex:
+        logger.exception(str(ex))
+
+
+@app.delete("/delete-users")
+def delete_users(ids: List[int], session: Session = Depends(get_session)):
+    try:
+        Dao.delete_users(ids=ids, session=session)
+        return {"success": True}
+    except Exception as ex:
+        logger.exception(str(ex))
+        return {"success": False}
+
+
+@app.patch("/update-user")
+def update_user(user_id: int, model: UserModel, session: Session = Depends(get_session)):
+    try:
+        Dao.update_user(user_id=user_id, session=session, user_model=model)
+        return {"success": True}
+    except Exception as ex:
+        logger.exception(str(ex))
+        return {"success": False}

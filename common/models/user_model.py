@@ -25,7 +25,7 @@ class UserModel(BaseModel):
     @classmethod
     def validate_alphanums(cls, value: str) -> str:
         pattern = "^[a-zA-Z\\s]+"
-        assert re.match(pattern=pattern, string=value), "Phone doesn't match expected pattern"
+        assert re.match(pattern=pattern, string=value), "Name should only be letters, numbers and spaces"
         return value
 
     # Now, in the Pydantic models, add an internal Config class.
